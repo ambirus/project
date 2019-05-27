@@ -1,0 +1,7 @@
+{
+    "name": "ambirus/project",
+    "description": "A library for my projects",
+    "require": {
+        "php": "^7.1"
+    }
+}
