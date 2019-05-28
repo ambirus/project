@@ -1,7 +1,19 @@
 {
     "name": "ambirus/project",
     "description": "A library for my projects",
+    "authors": [
+        {
+            "name": "Ruslan Abramov",
+            "email": "ambirus1@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
         "php": "^7.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "Project": "lib/"
+        }
     }
 }
