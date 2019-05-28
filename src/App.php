@@ -2,7 +2,7 @@
 
 namespace Project;
 
-use src\routers\{
+use Project\routers\{
     ConsoleRouter, WebRouter
 };
 

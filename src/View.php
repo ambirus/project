@@ -3,7 +3,7 @@
 namespace Project;
 
 use Exception;
-use src\routers\WebRouter;
+use Project\routers\WebRouter;
 
 class View
 {
