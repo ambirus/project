@@ -13,7 +13,8 @@ class Config
      */
     public static function get($file = null)
     {
-        $configPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'configs';
+        $configPath = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'protected' .
+            DIRECTORY_SEPARATOR . 'configs';
         $configFiles = glob($configPath . DIRECTORY_SEPARATOR . ($file !== null ? $file : '*') . '.{php}',
             GLOB_BRACE);
 

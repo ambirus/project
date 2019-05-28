@@ -45,7 +45,7 @@ class ConsoleRouter implements Routing
 
         $commandName = $commandName . 'Command';
         $actionName = 'action' . $actionName;
-        $namespaceController = 'src\\commands\\' . $commandName;
+        $namespaceController = 'application\\commands\\' . $commandName;
 
         if (!class_exists($namespaceController)) {
             throw new Exception(__CLASS__ . ': ' . 'No such class ' . $namespaceController . "\n");

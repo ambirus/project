@@ -50,7 +50,7 @@ class WebRouter implements Routing
 
         $controllerName = self::$controllerName . 'Controller';
         $actionName = 'action' . self::$actionName;
-        $namespaceController = 'src\\controllers\\' . $controllerName;
+        $namespaceController = 'application\\controllers\\' . $controllerName;
 
         if (!class_exists($namespaceController)) {
             throw new Exception(__CLASS__ . ': ' . 'No such class &laquo;' . $namespaceController . '&raquo;');
