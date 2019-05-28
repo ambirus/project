@@ -16,9 +16,7 @@ class View
      */
     public function __construct()
     {
-        $this->viewsPath = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'protected' .
-            DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR .
-            'views' . DIRECTORY_SEPARATOR;
+        $this->viewsPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
         $this->layoutFile = $this->viewsPath . 'layouts' . DIRECTORY_SEPARATOR . 'main.php';
         $this->templatesPath = $this->viewsPath . WebRouter::getCurrentControllerName() . DIRECTORY_SEPARATOR;
     }
