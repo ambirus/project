@@ -1,8 +1,8 @@
 <?php
 
-namespace src\db;
+namespace Project\db;
 
-use lib\Config;
+use Project\Config;
 use PDO;
 use Exception;
 

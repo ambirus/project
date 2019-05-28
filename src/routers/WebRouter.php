@@ -1,9 +1,9 @@
 <?php
 
-namespace src\routers;
+namespace Project\routers;
 
 use Exception;
-use lib\Config;
+use Project\Config;
 
 class WebRouter implements Routing
 {

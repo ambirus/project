@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace Project;
 
 use src\routers\{
     ConsoleRouter, WebRouter

@@ -1,6 +1,6 @@
 <?php
 
-namespace src\db;
+namespace Project\db;
 
 use Exception;
 
