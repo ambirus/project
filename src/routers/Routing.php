@@ -1,6 +1,6 @@
 <?php
 
-namespace lib\routers;
+namespace src\routers;
 
 interface Routing
 {

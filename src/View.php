@@ -1,9 +1,9 @@
 <?php
 
-namespace lib;
+namespace src;
 
 use Exception;
-use lib\routers\WebRouter;
+use src\routers\WebRouter;
 
 class View
 {

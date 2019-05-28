@@ -1,6 +1,6 @@
 <?php
 
-namespace lib\db;
+namespace src\db;
 
 use Exception;
 

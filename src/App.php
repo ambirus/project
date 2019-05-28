@@ -1,8 +1,8 @@
 <?php
 
-namespace lib;
+namespace src;
 
-use lib\routers\{
+use src\routers\{
     ConsoleRouter, WebRouter
 };
 
