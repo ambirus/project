@@ -7,16 +7,35 @@ use Exception;
 class Config
 {
     /**
-     * @param null $file
-     * @return mixed
+     * @var string
+     */
+    private $configPath;
+
+    /**
+     * Config constructor.
+     *
+     * @param string $configPath
      * @throws Exception
      */
-    public static function get($file = null)
+    public function __construct(string $configPath)
     {
-        $configPath = __DIR__ . DIRECTORY_SEPARATOR . 
-        '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'configs';
-        $configFiles = glob($configPath . DIRECTORY_SEPARATOR . ($file !== null ? $file : '*') . '.{php}',
-            GLOB_BRACE);
+        if (!is_dir($configPath)) {
+            throw new Exception('Config path is not directory');
+        }
+        $this->configPath = $configPath;
+    }
+
+    /**
+     * @param null $file
+     * @return array|mixed
+     * @throws Exception
+     */
+    public function get($file = null)
+    {
+        $configFiles = glob(
+            $this->configPath . DIRECTORY_SEPARATOR . ($file !== null ? $file : '*') . '.{php}',
+            GLOB_BRACE
+        );
 
         $countFiles = count($configFiles);
 
@@ -24,7 +43,7 @@ class Config
             $configArr = [];
 
             foreach ($configFiles as $configFile) {
-                $key = str_replace([$configPath, '.php', '/', '\\'], '', $configFile);
+                $key = str_replace([$this->configPath, '.php', '/', '\\'], '', $configFile);
                 $configFile = include $configFile;
                 if ($countFiles === 1) {
                     return $configFile;

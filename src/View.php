@@ -31,7 +31,6 @@ class View
         $templateFile = $this->templatesPath . $view . '.php';
 
         if (file_exists($templateFile)) {
-
             ob_start();
             ob_implicit_flush(false);
             extract($params, EXTR_OVERWRITE);
@@ -39,7 +38,6 @@ class View
             require $templateFile;
 
             $templateItems['content'] = ob_get_clean();
-
         } else {
             throw new Exception('No such template &laquo;' . $templateFile . '&raquo;! ');
         }

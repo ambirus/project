@@ -3,11 +3,17 @@
 namespace Project\routers;
 
 use Exception;
-use Project\Config;
+use Project\App;
 
 class WebRouter implements Routing
 {
+    /**
+     * @var string
+     */
     private static $controllerName = 'Index';
+    /**
+     * @var string
+     */
     private static $actionName = 'Index';
     private static $actionParams;
     private static $controller;
@@ -18,7 +24,7 @@ class WebRouter implements Routing
     public function execute()
     {
         $actionParams = [];
-        $shortRoutes = Config::get('routes');
+        $shortRoutes = App::getConfig()->get('routes');
 
         $route = isset($shortRoutes['routes'][$_SERVER['REQUEST_URI']]) ? $shortRoutes['routes'][$_SERVER['REQUEST_URI']] : $_SERVER['REQUEST_URI'];
 
@@ -29,7 +35,6 @@ class WebRouter implements Routing
         }
 
         if (!empty($routeParts[2])) {
-
             if (strpos($routeParts[2], '=')) {
                 $routes[3] = $routeParts[2];
                 $routes[4] = 'index';
@@ -61,29 +66,39 @@ class WebRouter implements Routing
         $action = $actionName;
 
         if (method_exists($controller, $action)) {
-
             $controller->$action($actionParams);
-
         } else {
             throw new Exception(__CLASS__ . ': ' . 'No such controller action &laquo;' . $action . '&raquo;');
         }
     }
 
-    public static function getCurrentControllerName()
+    /**
+     * @return string
+     */
+    public static function getCurrentControllerName(): string
     {
         return strtolower(self::$controllerName);
     }
 
-    public static function getCurrentActionName()
+    /**
+     * @return string
+     */
+    public static function getCurrentActionName(): string
     {
         return strtolower(self::$actionName);
     }
 
+    /**
+     * @return mixed
+     */
     public static function getCurrentController()
     {
         return self::$controller;
     }
 
+    /**
+     * @return mixed
+     */
     public static function getActionParams()
     {
         return self::$actionParams;

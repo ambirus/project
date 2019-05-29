@@ -4,5 +4,4 @@ namespace Project;
 
 class Model
 {
-
 }

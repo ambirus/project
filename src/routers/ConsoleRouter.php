@@ -23,8 +23,9 @@ class ConsoleRouter implements Routing
             }
         }
 
-        if (!isset($_SERVER['argv'][1]))
+        if (!isset($_SERVER['argv'][1])) {
             return;
+        }
 
         $routes = explode('/', $_SERVER['argv'][1]);
 
@@ -56,9 +57,7 @@ class ConsoleRouter implements Routing
         $action = $actionName;
 
         if (method_exists($controller, $action)) {
-
             $controller->$action($actionParams);
-
         } else {
             throw new Exception(__CLASS__ . ': ' . 'No such controller action ' . $action . "\n");
         }
