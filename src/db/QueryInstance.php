@@ -9,9 +9,11 @@ class QueryInstance
     private $method;
     private $tableName;
     private $connection;
+    private $query;
     private $fields;
     private $joinCondition;
     private $whereCondition;
+    private $havingCondition;
     private $limit;
     private $order;
     private $oneCondition;
@@ -30,6 +32,16 @@ class QueryInstance
         $this->tableName = $tableName;
         $this->data = $data;
         $this->connection = Mysql::getConnection();
+    }
+
+    /**
+     * @param string $query
+     * @return QueryInstance
+     */
+    public function query(string $query): QueryInstance
+    {
+        $this->query = $query;
+        return $this;
     }
 
     /**
@@ -67,17 +79,31 @@ class QueryInstance
         return $this;
     }
 
-    public function having()
+    /**
+     * @param string $condition
+     * @return QueryInstance
+     */
+    public function having(string $condition): QueryInstance
     {
+        $this->havingCondition = $condition;
         return $this;
     }
 
+    /**
+     * @param string $orderCondition
+     * @param string $orderDirection
+     * @return $this
+     */
     public function orderBy(string $orderCondition, string $orderDirection = 'ASC')
     {
         $this->order = $orderCondition . ' ' . $orderDirection;
         return $this;
     }
 
+    /**
+     * @param int $count
+     * @return $this
+     */
     public function limit(int $count = 20)
     {
         $this->limit = $count;
@@ -96,6 +122,10 @@ class QueryInstance
      */
     public function execute()
     {
+        if ($this->method === 'query') {
+            return $this->makeQuery();
+        }
+
         if ($this->method === 'create') {
             return $this->makeCreate();
         }
@@ -111,6 +141,15 @@ class QueryInstance
         if ($this->method === 'delete') {
             return $this->makeDelete();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function makeQuery()
+    {
+        $query = $this->connection->prepare($this->query);
+        return $query->execute();
     }
 
     /**

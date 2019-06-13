@@ -26,7 +26,7 @@ class WebRouter implements Routing
         $actionParams = [];
         $shortRoutes = App::getConfig()->get('routes');
 
-        $route = isset($shortRoutes['routes'][$_SERVER['REQUEST_URI']]) ? $shortRoutes['routes'][$_SERVER['REQUEST_URI']] : $_SERVER['REQUEST_URI'];
+        $route = isset($shortRoutes[$_SERVER['REQUEST_URI']]) ? $shortRoutes[$_SERVER['REQUEST_URI']] : $_SERVER['REQUEST_URI'];
 
         $routeParts = explode('/', $route);
 

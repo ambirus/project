@@ -22,6 +22,7 @@ abstract class Table
     /**
      * @param array $data
      * @return QueryInstance
+     * @throws Exception
      */
     public function create(array $data): QueryInstance
     {
@@ -30,6 +31,7 @@ abstract class Table
 
     /**
      * @return QueryInstance
+     * @throws Exception
      */
     public function read(): QueryInstance
     {
@@ -38,6 +40,7 @@ abstract class Table
 
     /**
      * @return QueryInstance
+     * @throws Exception
      */
     public function update(): QueryInstance
     {
@@ -46,9 +49,19 @@ abstract class Table
 
     /**
      * @return QueryInstance
+     * @throws Exception
      */
     public function delete(): QueryInstance
     {
         return new QueryInstance('delete', $this->name);
+    }
+
+    /**
+     * @return QueryInstance
+     * @throws Exception
+     */
+    public function query(): QueryInstance
+    {
+        return new QueryInstance('query', $this->name);
     }
 }
