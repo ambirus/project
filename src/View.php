@@ -7,8 +7,17 @@ use Project\routers\WebRouter;
 
 class View
 {
+    /**
+     * @var string
+     */
     private $viewsPath;
+    /**
+     * @var string
+     */
     private $templatesPath;
+    /**
+     * @var string
+     */
     private $layoutFile;
 
     /**
@@ -22,11 +31,12 @@ class View
     }
 
     /**
-     * @param $view
+     * @param string $view
      * @param array $params
+     * @param bool $isPartial
      * @throws Exception
      */
-    public function render($view, $params = [])
+    public function render(string $view, array $params = [], bool $isPartial = false)
     {
         $templateFile = $this->templatesPath . $view . '.php';
 
@@ -37,7 +47,13 @@ class View
 
             require $templateFile;
 
-            $templateItems['content'] = ob_get_clean();
+            $content = ob_get_clean();
+            if ($isPartial) {
+                echo $content;
+                return;
+            } else {
+                $templateItems['content'] = $content;
+            }
         } else {
             throw new Exception('No such template &laquo;' . $templateFile . '&raquo;! ');
         }
