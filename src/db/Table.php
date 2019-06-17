@@ -55,13 +55,4 @@ abstract class Table
     {
         return new QueryInstance('delete', $this->name);
     }
-
-    /**
-     * @return QueryInstance
-     * @throws Exception
-     */
-    public function query(): QueryInstance
-    {
-        return new QueryInstance('query', $this->name);
-    }
 }

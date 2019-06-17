@@ -9,7 +9,7 @@ class QueryInstance
     private $method;
     private $tableName;
     private $connection;
-    private $query;
+    private $sql;
     private $fields;
     private $joinCondition;
     private $whereCondition;
@@ -35,12 +35,12 @@ class QueryInstance
     }
 
     /**
-     * @param string $query
+     * @param string $sql
      * @return QueryInstance
      */
-    public function query(string $query): QueryInstance
+    public function query(string $sql): QueryInstance
     {
-        $this->query = $query;
+        $this->sql = $sql;
         return $this;
     }
 
@@ -122,10 +122,6 @@ class QueryInstance
      */
     public function execute()
     {
-        if ($this->method === 'query') {
-            return $this->makeQuery();
-        }
-
         if ($this->method === 'create') {
             return $this->makeCreate();
         }
@@ -141,15 +137,6 @@ class QueryInstance
         if ($this->method === 'delete') {
             return $this->makeDelete();
         }
-    }
-
-    /**
-     * @return bool
-     */
-    private function makeQuery()
-    {
-        $query = $this->connection->prepare($this->query);
-        return $query->execute();
     }
 
     /**
@@ -185,31 +172,36 @@ class QueryInstance
      */
     private function makeRead()
     {
-        $fields = "`{$this->tableName}`.*";
+        if ($this->sql !== null) {
+            $sql = $this->sql;
+        } else {
+            $fields = "`{$this->tableName}`.*";
 
-        if (!is_null($this->fields)) {
-            $fields = $this->fields;
-        }
-        $where = '';
-        if (!is_null($this->whereCondition)) {
-            $where = ' WHERE ' . $this->whereCondition;
-        }
-        $join = '';
-        if (!is_null($this->joinCondition)) {
-            $join = ' JOIN ' . $this->joinCondition;
+            if (!is_null($this->fields)) {
+                $fields = $this->fields;
+            }
+            $where = '';
+            if (!is_null($this->whereCondition)) {
+                $where = ' WHERE ' . $this->whereCondition;
+            }
+            $join = '';
+            if (!is_null($this->joinCondition)) {
+                $join = ' JOIN ' . $this->joinCondition;
+            }
+
+            $limit = '';
+            if (!is_null($this->limit)) {
+                $limit = ' LIMIT ' . $this->limit;
+            }
+
+            $order = '';
+            if (!is_null($this->order)) {
+                $order = ' ORDER BY ' . $this->order;
+            }
+
+            $sql = "SELECT " . $fields . " FROM `{$this->tableName}` {$join} {$where} {$order} {$limit}";
         }
 
-        $limit = '';
-        if (!is_null($this->limit)) {
-            $limit = ' LIMIT ' . $this->limit;
-        }
-
-        $order = '';
-        if (!is_null($this->order)) {
-            $order = ' ORDER BY ' . $this->order;
-        }
-
-        $sql = "SELECT " . $fields . " FROM `{$this->tableName}` {$join} {$where} {$order} {$limit}";
 
         $query = $this->connection->query($sql);
 
