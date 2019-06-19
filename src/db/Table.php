@@ -39,12 +39,13 @@ abstract class Table
     }
 
     /**
+     * @param array $data
      * @return QueryInstance
      * @throws Exception
      */
-    public function update(): QueryInstance
+    public function update(array $data): QueryInstance
     {
-        return new QueryInstance('update', $this->name);
+        return new QueryInstance('update', $this->name, $data);
     }
 
     /**

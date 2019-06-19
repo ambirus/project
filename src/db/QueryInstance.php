@@ -231,11 +231,10 @@ class QueryInstance
             throw new Exception("Data required");
         }
 
-        $columns = $values = $preparedData = [];
+        $columnsValues = $preparedData = [];
 
         foreach ($this->data as $k => $v) {
-            $columns[] = $k;
-            $values[] = ':' . $k;
+            $columnsValues[] = $k . ' = ' . ':' . $k;
             $preparedData[$k] = $v;
         }
 
@@ -244,9 +243,8 @@ class QueryInstance
             $where = ' WHERE ' . $this->whereCondition;
         }
 
-        $sql = "UPDATE `" . $this->tableName . "`
-        (" . implode(', ', $columns) . ")
-        SET (" . implode(',', $values) . ") {$where}";
+        $sql = "UPDATE `" . $this->tableName . "`        
+        SET " . implode(',', $columnsValues) . " {$where}";
 
         $query = $this->connection->prepare($sql);
 
