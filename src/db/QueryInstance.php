@@ -13,6 +13,7 @@ class QueryInstance
     private $fields;
     private $joinCondition;
     private $whereCondition;
+    private $groupByCondition;
     private $havingCondition;
     private $limit;
     private $order;
@@ -74,8 +75,13 @@ class QueryInstance
         return $this;
     }
 
-    public function groupBy()
+    /**
+     * @param string $condition
+     * @return QueryInstance
+     */
+    public function groupBy(string $condition): QueryInstance
     {
+        $this->groupByCondition = $condition;
         return $this;
     }
 
@@ -199,9 +205,13 @@ class QueryInstance
                 $order = ' ORDER BY ' . $this->order;
             }
 
-            $sql = "SELECT " . $fields . " FROM `{$this->tableName}` {$join} {$where} {$order} {$limit}";
-        }
+            $groupBy = '';
+            if (!is_null($this->groupByCondition)) {
+                $groupBy = ' GROUP BY ' . $this->groupByCondition;
+            }
 
+            $sql = "SELECT " . $fields . " FROM `{$this->tableName}` {$join} {$where} {$groupBy} {$order} {$limit}";
+        }
 
         $query = $this->connection->query($sql);
 
