@@ -24,10 +24,7 @@ class WebRouter implements Routing
     public function execute()
     {
         $actionParams = [];
-        $shortRoutes = App::getConfig()->get('routes');
-
-        $route = isset($shortRoutes[$_SERVER['REQUEST_URI']]) ? $shortRoutes[$_SERVER['REQUEST_URI']] : $_SERVER['REQUEST_URI'];
-
+        $route = $this->getShortUrl($_SERVER['REQUEST_URI']);
         $routeParts = explode('/', $route);
 
         if (!empty($routeParts[1])) {
@@ -102,5 +99,31 @@ class WebRouter implements Routing
     public static function getActionParams()
     {
         return self::$actionParams;
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws Exception
+     */
+    private function getShortUrl(string $url): string
+    {
+        $shortRoutes = App::getConfig()->get('routes');
+
+        foreach ($shortRoutes as $pattern => $route) {
+            if (preg_match("/" . $pattern . "/sU", $url)) {
+                $urlParts = explode('/', $url);
+                array_shift($urlParts);
+                $keys = array_keys($urlParts);
+
+                foreach ($keys as $key) {
+                    $route = str_replace('{' . $key . '}', $urlParts[$key], $route);
+                }
+
+                return $route;
+            }
+        }
+
+        return $url;
     }
 }

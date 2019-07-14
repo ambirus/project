@@ -5,7 +5,7 @@ namespace Project;
 use ReflectionClass;
 use Exception;
 
-class Model
+abstract class Model
 {
     private $errors;
     private $validators;
@@ -20,6 +20,7 @@ class Model
 
     /**
      * @return string
+     * @throws \ReflectionException
      */
     public function formName(): string
     {
@@ -28,6 +29,7 @@ class Model
 
     /**
      * @return array
+     * @throws \ReflectionException
      */
     public function attributes(): array
     {
@@ -74,7 +76,8 @@ class Model
     }
 
     /**
-     * @return mixed
+     * @return ArrayObject
+     * @throws Exception
      */
     public function getValidators()
     {
@@ -87,6 +90,7 @@ class Model
     /**
      * @param null $attribute
      * @return array
+     * @throws Exception
      */
     public function getActiveValidators($attribute = null): array
     {
@@ -124,6 +128,7 @@ class Model
 
     /**
      * @param $values
+     * @throws \ReflectionException
      */
     public function setAttributes($values)
     {
@@ -141,6 +146,7 @@ class Model
      * @param $data
      * @param null $formName
      * @return bool
+     * @throws \ReflectionException
      */
     public function load($data, $formName = null): bool
     {

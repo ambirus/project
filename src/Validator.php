@@ -2,7 +2,7 @@
 
 namespace Project;
 
-class Validator
+abstract class Validator
 {
     private $on = true;
 
