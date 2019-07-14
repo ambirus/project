@@ -61,7 +61,7 @@ class QueryInstance
      */
     public function join(string $joinCondition): QueryInstance
     {
-        $this->joinCondition = $joinCondition;
+        $this->joinCondition[] = 'JOIN ' . $joinCondition;
         return $this;
     }
 
@@ -192,7 +192,7 @@ class QueryInstance
             }
             $join = '';
             if (!is_null($this->joinCondition)) {
-                $join = ' JOIN ' . $this->joinCondition;
+                $join = implode(' ', $this->joinCondition);
             }
 
             $limit = '';
