@@ -5,7 +5,7 @@ namespace Project;
 use Exception;
 use Project\routers\WebRouter;
 
-abstract class View
+class View
 {
     /**
      * @var string
