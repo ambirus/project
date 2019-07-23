@@ -12,7 +12,14 @@ class QueryInstance
     private $sql;
     private $fields;
     private $joinCondition;
+    /**
+     * @var string
+     */
     private $whereCondition;
+    /**
+     * @var array
+     */
+    private $whereParams = [];
     private $groupByCondition;
     private $havingCondition;
     private $limit;
@@ -67,11 +74,13 @@ class QueryInstance
 
     /**
      * @param string $condition
+     * @param array $params
      * @return QueryInstance
      */
-    public function where(string $condition): QueryInstance
+    public function where(string $condition, array $params = []): QueryInstance
     {
         $this->whereCondition = $condition;
+        $this->whereParams = $params;
         return $this;
     }
 
@@ -213,7 +222,15 @@ class QueryInstance
             $sql = "SELECT " . $fields . " FROM `{$this->tableName}` {$join} {$where} {$groupBy} {$order} {$limit}";
         }
 
-        $query = $this->connection->query($sql);
+        $query = $this->connection->prepare($sql);
+
+        if (!empty($this->whereParams)) {
+            foreach ($this->whereParams as $key => $param) {
+                $query->bindValue(':' . $key, $param);
+            }
+        }
+
+        $res = $query->execute();
 
         if ($this->oneCondition) {
             return $query->fetch();
