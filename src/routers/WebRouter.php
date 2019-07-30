@@ -14,6 +14,10 @@ class WebRouter implements Routing
     /**
      * @var string
      */
+    private static $moduleName;
+    /**
+     * @var string
+     */
     private static $controllerName = 'Index';
     /**
      * @var string
@@ -40,6 +44,7 @@ class WebRouter implements Routing
 
         if ($routeParts[$controllerPos] === 'modules') {
             $this->namespace = 'application\\modules\\' . $routeParts[$actionPos] . '\\controllers\\';
+            self::$moduleName = $routeParts[$actionPos];
             $controllerPos = 3;
             $actionPos = 4;
             $paramsPos = 5;
@@ -79,6 +84,14 @@ class WebRouter implements Routing
         } else {
             throw new Exception(__CLASS__ . ': ' . 'No such controller action &laquo;' . $actionName . '&raquo;');
         }
+    }
+
+    /**
+     * @return string
+     */
+    public static function getCurrentModuleName(): string
+    {
+        return strtolower(self::$moduleName);
     }
 
     /**

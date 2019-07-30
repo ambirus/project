@@ -25,8 +25,20 @@ class View
      */
     public function __construct()
     {
-        $this->viewsPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR;
+        $this->viewsPath = __DIR__;
+
+        for ($i = 0; $i < 4; $i++) {
+            $this->viewsPath .= DIRECTORY_SEPARATOR . '..';
+        }
+        $this->viewsPath .= DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR
+            . 'views' . DIRECTORY_SEPARATOR;
+
         $this->layoutFile = $this->viewsPath . 'layouts' . DIRECTORY_SEPARATOR . 'main.php';
+
+        if (!empty(WebRouter::getCurrentModuleName())) {
+            $this->viewsPath = str_replace('application', 'application' . DIRECTORY_SEPARATOR . 'modules'
+                . DIRECTORY_SEPARATOR . WebRouter::getCurrentModuleName() . DIRECTORY_SEPARATOR, $this->viewsPath);
+        }
         $this->templatesPath = $this->viewsPath . WebRouter::getCurrentControllerName() . DIRECTORY_SEPARATOR;
     }
 
