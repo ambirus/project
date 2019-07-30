@@ -5,6 +5,10 @@ namespace Project\routers;
 use Exception;
 use Project\App;
 
+/**
+ * Class WebRouter
+ * @package Project\routers
+ */
 class WebRouter implements Routing
 {
     /**
@@ -17,55 +21,63 @@ class WebRouter implements Routing
     private static $actionName = 'Index';
     private static $actionParams;
     private static $controller;
+    /**
+     * @var string
+     */
+    private $namespace = 'application\\controllers\\';
 
     /**
      * @throws Exception
      */
     public function execute()
     {
-        $actionParams = [];
         $route = $this->getShortUrl($_SERVER['REQUEST_URI']);
         $routeParts = explode('/', $route);
 
-        if (!empty($routeParts[1])) {
-            self::$controllerName = ucfirst($routeParts[1]);
+        $controllerPos = 1;
+        $actionPos = 2;
+        $paramsPos = 3;
+
+        if ($routeParts[$controllerPos] === 'modules') {
+            $this->namespace = 'application\\modules\\' . $routeParts[$actionPos] . '\\controllers\\';
+            $controllerPos = 3;
+            $actionPos = 4;
+            $paramsPos = 5;
         }
 
-        if (!empty($routeParts[2])) {
-            if (strpos($routeParts[2], '=')) {
-                $routes[3] = $routeParts[2];
-                $routes[4] = 'index';
-            }
+        $rawControllerName = !empty($routeParts[$controllerPos]) ? $routeParts[$controllerPos] : self::$controllerName;
+        $rawActionName = !empty($routeParts[$actionPos]) ? $routeParts[$actionPos] : self::$actionName;
+        $rawParams = $routeParts[$paramsPos] ?? '';
 
-            self::$actionName = ucfirst($routeParts[2]);
-        }
+        /**
+         * handling controller
+         */
+        self::$controllerName = $this->getController($rawControllerName);
 
-        if (!empty($routeParts[3])) {
-            $params = explode('&', $routeParts[3]);
+        /**
+         * handling action
+         */
+        self::$actionName = $this->getAction($rawActionName);
 
-            foreach ($params as $param) {
-                $tmp = explode('=', $param);
-                $actionParams[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : null;
-            }
-            self::$actionParams = $actionParams;
-        }
+        /**
+         * handling parameters
+         */
+        self::$actionParams = $this->getParams($rawParams);
 
         $controllerName = self::$controllerName . 'Controller';
         $actionName = 'action' . self::$actionName;
-        $namespaceController = 'application\\controllers\\' . $controllerName;
+        $namespaceController = $this->namespace . $controllerName;
 
         if (!class_exists($namespaceController)) {
             throw new Exception(__CLASS__ . ': ' . 'No such class &laquo;' . $namespaceController . '&raquo;');
         }
 
-        $controller = new $namespaceController;
+        $controllerInstance = new $namespaceController;
 
-        $action = $actionName;
-
-        if (method_exists($controller, $action)) {
-            $controller->$action($actionParams);
+        if (method_exists($controllerInstance, $actionName)) {
+            $controllerInstance->$actionName(self::$actionParams);
         } else {
-            throw new Exception(__CLASS__ . ': ' . 'No such controller action &laquo;' . $action . '&raquo;');
+            throw new Exception(__CLASS__ . ': ' . 'No such controller action &laquo;' . $actionName . '&raquo;');
         }
     }
 
@@ -125,5 +137,43 @@ class WebRouter implements Routing
         }
 
         return $url;
+    }
+
+    /**
+     * @param string $controllerName
+     * @return string
+     */
+    private function getController(string $controllerName): string
+    {
+        return ucfirst($controllerName);
+    }
+
+    /**
+     * @param string $actionName
+     * @return string
+     */
+    private function getAction(string $actionName): string
+    {
+        return ucfirst($actionName);
+    }
+
+    /**
+     * @param string $paramsStr
+     * @return array
+     */
+    private function getParams(string $paramsStr): array
+    {
+        if (!empty($paramsStr)) {
+            $params = explode('&', $paramsStr);
+            $actionParams = [];
+
+            foreach ($params as $param) {
+                $tmp = explode('=', $param);
+                $actionParams[$tmp[0]] = $tmp[1] ?? null;
+            }
+            return $actionParams;
+        }
+
+        return [];
     }
 }
