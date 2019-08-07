@@ -3,6 +3,7 @@
 namespace Project\db;
 
 use Exception;
+use Project\dictionaries\db\MethodsDictionary;
 
 class QueryInstance
 {
@@ -22,7 +23,7 @@ class QueryInstance
     private $whereParams = [];
     private $groupByCondition;
     private $havingCondition;
-    private $limit;
+    private $limit = 2;
     private $order;
     private $oneCondition;
     private $data;
@@ -137,21 +138,13 @@ class QueryInstance
      */
     public function execute()
     {
-        if ($this->method === 'create') {
-            return $this->makeCreate();
+        if (!in_array($this->method, MethodsDictionary::get())) {
+            throw new Exception('CRUD method required');
         }
 
-        if ($this->method === 'read') {
-            return $this->makeRead();
-        }
+        $method = 'make' . ucfirst($this->method);
 
-        if ($this->method === 'update') {
-            return $this->makeUpdate();
-        }
-
-        if ($this->method === 'delete') {
-            return $this->makeDelete();
-        }
+        return $this->$method();
     }
 
     /**

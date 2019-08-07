@@ -3,6 +3,7 @@
 namespace Project\db;
 
 use Exception;
+use Project\dictionaries\db\MethodsDictionary;
 
 abstract class Table
 {
@@ -26,7 +27,7 @@ abstract class Table
      */
     public function create(array $data): QueryInstance
     {
-        return new QueryInstance('create', $this->name, $data);
+        return new QueryInstance(MethodsDictionary::CREATE, $this->name, $data);
     }
 
     /**
@@ -35,7 +36,7 @@ abstract class Table
      */
     public function read(): QueryInstance
     {
-        return new QueryInstance('read', $this->name);
+        return new QueryInstance(MethodsDictionary::READ, $this->name);
     }
 
     /**
@@ -45,7 +46,7 @@ abstract class Table
      */
     public function update(array $data): QueryInstance
     {
-        return new QueryInstance('update', $this->name, $data);
+        return new QueryInstance(MethodsDictionary::UPDATE, $this->name, $data);
     }
 
     /**
@@ -54,6 +55,6 @@ abstract class Table
      */
     public function delete(): QueryInstance
     {
-        return new QueryInstance('delete', $this->name);
+        return new QueryInstance(MethodsDictionary::DELETE, $this->name);
     }
 }
