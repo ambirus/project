@@ -5,8 +5,15 @@ namespace Project\db;
 use Exception;
 use Project\dictionaries\db\MethodsDictionary;
 
+/**
+ * Class Table
+ * @package Project\db
+ */
 abstract class Table
 {
+    /**
+     * @var string
+     */
     protected $name;
 
     /**
@@ -21,6 +28,12 @@ abstract class Table
     }
 
     /**
+     * Example:
+     *
+     * (new Post())
+     * ->create(['title' => 'Post 1'])
+     * ->execute();
+     *
      * @param array $data
      * @return QueryInstance
      * @throws Exception
@@ -31,6 +44,12 @@ abstract class Table
     }
 
     /**
+     * Example:
+     *
+     * (new Post())
+     * ->read()
+     * ->execute();
+     *
      * @return QueryInstance
      * @throws Exception
      */
@@ -40,6 +59,12 @@ abstract class Table
     }
 
     /**
+     * Example:
+     *
+     * (new Post())
+     * ->update(['title' => 'Post 2'])
+     * ->execute();
+     *
      * @param array $data
      * @return QueryInstance
      * @throws Exception
@@ -50,6 +75,12 @@ abstract class Table
     }
 
     /**
+     * Example:
+     *
+     * (new Post())
+     * ->delete()
+     * ->execute();
+     *
      * @return QueryInstance
      * @throws Exception
      */

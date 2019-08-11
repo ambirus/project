@@ -3,33 +3,73 @@
 namespace Project\db;
 
 use Exception;
+use Project\dictionaries\db\OrderDirectionsDictionary;
+use ReflectionException;
+use Project\dictionaries\db\JoinTypesDictionary;
 use Project\dictionaries\db\MethodsDictionary;
 
+/**
+ * Class QueryInstance
+ * @package Project\db
+ */
 class QueryInstance
 {
-    private $method;
-    private $tableName;
-    private $connection;
-    private $sql;
-    private $fields;
-    private $joinCondition;
     /**
      * @var string
      */
-    private $whereCondition;
+    private $method;
+    /**
+     * @var string
+     */
+    private $tableName;
+    /**
+     * @var string
+     */
+    private $sql;
+    /**
+     * @var string
+     */
+    private $fields;
     /**
      * @var array
      */
-    private $whereParams = [];
-    private $groupByCondition;
-    private $havingCondition;
-    private $limit = 2;
+    private $join;
+    /**
+     * @var array
+     */
+    private $where;
+    /**
+     * @var string
+     */
+    private $groupBy;
+    /**
+     * @var string
+     */
+    private $having;
+    /**
+     * @var array
+     */
     private $order;
-    private $oneCondition;
+    /**
+     * @var string
+     */
+    private $limit = 20;
+    /**
+     * @var bool
+     */
+    private $one;
+    /**
+     * @var array
+     */
     private $data;
 
     /**
      * QueryInstance constructor.
+     *
+     * Example:
+     *
+     * new QueryInstance('create', 'table1', ['id' => 1, 'name' => 'Peter'])
+     *
      * @param string $method
      * @param string $tableName
      * @param array $data
@@ -40,10 +80,13 @@ class QueryInstance
         $this->method = $method;
         $this->tableName = $tableName;
         $this->data = $data;
-        $this->connection = Mysql::getConnection();
     }
 
     /**
+     * Example:
+     *
+     * query('SELECT id, name FROM table1 WHERE id > 10')
+     *
      * @param string $sql
      * @return QueryInstance
      */
@@ -54,6 +97,10 @@ class QueryInstance
     }
 
     /**
+     * Example:
+     *
+     * select('table1.id, table2.name')
+     *
      * @param string $fields
      * @return QueryInstance
      */
@@ -64,72 +111,200 @@ class QueryInstance
     }
 
     /**
-     * @param string $joinCondition
+     * Example:
+     *
+     * join('table2', 'table2.id = table1.post_id', 'LEFT')
+     *
+     * @param string $joinedTable
+     * @param string $joinedCondition
+     * @param string $typeOfJoin
      * @return QueryInstance
+     * @throws ReflectionException
      */
-    public function join(string $joinCondition): QueryInstance
+    public function join(string $joinedTable, string $joinedCondition, string $typeOfJoin = ''): QueryInstance
     {
-        $this->joinCondition[] = 'JOIN ' . $joinCondition;
+        if (!in_array($typeOfJoin, JoinTypesDictionary::get())) {
+            throw new Exception('Valid type of join required');
+        }
+        $this->join[] = [$joinedTable, $joinedCondition, $typeOfJoin];
         return $this;
     }
 
     /**
+     * Example:
+     *
+     * where('id = :id OR name = :name', ['id' => 1, 'name' => 'Peter'])
+     *
      * @param string $condition
-     * @param array $params
+     * @param array $bindValues
      * @return QueryInstance
      */
-    public function where(string $condition, array $params = []): QueryInstance
+    public function where(string $condition, array $bindValues = []): QueryInstance
     {
-        $this->whereCondition = $condition;
-        $this->whereParams = $params;
+        $this->where[] = [$condition, $bindValues];
         return $this;
     }
 
     /**
+     * Example:
+     *
+     * groupBy('table1.id')
+     *
      * @param string $condition
      * @return QueryInstance
      */
     public function groupBy(string $condition): QueryInstance
     {
-        $this->groupByCondition = $condition;
+        $this->groupBy = $condition;
         return $this;
     }
 
     /**
+     * Example:
+     *
+     * having('postsCount > 5')
+     *
      * @param string $condition
      * @return QueryInstance
      */
     public function having(string $condition): QueryInstance
     {
-        $this->havingCondition = $condition;
+        $this->having = $condition;
         return $this;
     }
 
     /**
-     * @param string $orderCondition
+     * Example:
+     *
+     * orderBy('table.created_at', 'DESC')
+     *
+     * @param string $condition
      * @param string $orderDirection
-     * @return $this
+     * @return QueryInstance
+     * @throws ReflectionException
      */
-    public function orderBy(string $orderCondition, string $orderDirection = 'ASC')
+    public function orderBy(string $condition, string $orderDirection = OrderDirectionsDictionary::ASC): QueryInstance
     {
-        $this->order = $orderCondition . ' ' . $orderDirection;
+        if (!in_array($orderDirection, OrderDirectionsDictionary::get())) {
+            throw new Exception('Valid order direction required');
+        }
+        $this->order[] = [$condition, $orderDirection];
         return $this;
     }
 
     /**
+     * Example:
+     *
+     * limit(10, 10)
+     *
      * @param int $count
-     * @return $this
+     * @param int $offset
+     * @return QueryInstance
      */
-    public function limit(int $count = 20)
+    public function limit(int $count, int $offset = 0): QueryInstance
     {
         $this->limit = $count;
+        if ($offset > 0) {
+            $this->limit .= ', ' . $offset;
+        }
         return $this;
     }
 
-    public function one()
+    /**
+     * @return QueryInstance
+     */
+    public function one(): QueryInstance
     {
-        $this->oneCondition = true;
+        $this->one = true;
         return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getSql(): ?string
+    {
+        return $this->sql;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFields(): ?string
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @return null|array
+     */
+    public function getJoin(): ?array
+    {
+        return $this->join;
+    }
+
+    /**
+     * @return null|array
+     */
+    public function getWhere(): ?array
+    {
+        return $this->where;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getGroupBy(): ?string
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getHaving(): ?string
+    {
+        return $this->having;
+    }
+
+    /**
+     * @return null|array
+     */
+    public function getOrder(): ?array
+    {
+        return $this->order;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLimit(): string
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @return null|bool
+     */
+    public function getOne(): ?bool
+    {
+        return $this->one;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableName(): string
+    {
+        return $this->tableName;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
     }
 
     /**
@@ -144,135 +319,6 @@ class QueryInstance
 
         $method = 'make' . ucfirst($this->method);
 
-        return $this->$method();
-    }
-
-    /**
-     * @return string
-     * @throws Exception
-     */
-    private function makeCreate()
-    {
-        if (count($this->data) === 0) {
-            throw new Exception("Data required");
-        }
-
-        $columns = $values = $preparedData = [];
-
-        foreach ($this->data as $k => $v) {
-            $columns[] = $k;
-            $values[] = ':' . $k;
-            $preparedData[$k] = $v;
-        }
-
-        $sql = "INSERT INTO `" . $this->tableName . "`
-        (" . implode(', ', $columns) . ")
-        VALUES (" . implode(',', $values) . ")";
-
-        $query = $this->connection->prepare($sql);
-        $query->execute($preparedData);
-
-        return $this->connection->lastInsertId();
-    }
-
-    /**
-     * @return array|mixed
-     */
-    private function makeRead()
-    {
-        if ($this->sql !== null) {
-            $sql = $this->sql;
-        } else {
-            $fields = "`{$this->tableName}`.*";
-
-            if (!is_null($this->fields)) {
-                $fields = $this->fields;
-            }
-            $where = '';
-            if (!is_null($this->whereCondition)) {
-                $where = ' WHERE ' . $this->whereCondition;
-            }
-            $join = '';
-            if (!is_null($this->joinCondition)) {
-                $join = implode(' ', $this->joinCondition);
-            }
-
-            $limit = '';
-            if (!is_null($this->limit)) {
-                $limit = ' LIMIT ' . $this->limit;
-            }
-
-            $order = '';
-            if (!is_null($this->order)) {
-                $order = ' ORDER BY ' . $this->order;
-            }
-
-            $groupBy = '';
-            if (!is_null($this->groupByCondition)) {
-                $groupBy = ' GROUP BY ' . $this->groupByCondition;
-            }
-
-            $sql = "SELECT " . $fields . " FROM `{$this->tableName}` {$join} {$where} {$groupBy} {$order} {$limit}";
-        }
-
-        $query = $this->connection->prepare($sql);
-
-        if (!empty($this->whereParams)) {
-            foreach ($this->whereParams as $key => $param) {
-                $query->bindValue(':' . $key, $param);
-            }
-        }
-
-        $res = $query->execute();
-
-        if ($this->oneCondition) {
-            return $query->fetch();
-        } else {
-            return $query->fetchAll();
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function makeUpdate()
-    {
-        if (count($this->data) === 0) {
-            throw new Exception("Data required");
-        }
-
-        $columnsValues = $preparedData = [];
-
-        foreach ($this->data as $k => $v) {
-            $columnsValues[] = $k . ' = ' . ':' . $k;
-            $preparedData[$k] = $v;
-        }
-
-        $where = '';
-        if (!is_null($this->whereCondition)) {
-            $where = ' WHERE ' . $this->whereCondition;
-        }
-
-        $sql = "UPDATE `" . $this->tableName . "`        
-        SET " . implode(',', $columnsValues) . " {$where}";
-
-        $query = $this->connection->prepare($sql);
-
-        return $query->execute($preparedData);
-    }
-
-    /**
-     * @return bool
-     */
-    public function makeDelete()
-    {
-        $where = '';
-        if (!is_null($this->whereCondition)) {
-            $where = ' WHERE ' . $this->whereCondition;
-        }
-        $sql = "DELETE FROM `{$this->tableName}` {$where}";
-        $query = $this->connection->prepare($sql);
-
-        return $query->execute();
+        return (new QueryBuilder())->$method($this);
     }
 }

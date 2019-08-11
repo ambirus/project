@@ -6,8 +6,15 @@ use PDO;
 use Exception;
 use Project\App;
 
+/**
+ * Class Mysql
+ * @package Project\db
+ */
 class Mysql
 {
+    /**
+     * @var PDO
+     */
     private static $connection;
 
     private function __construct()

@@ -3,8 +3,13 @@
 namespace Project;
 
 use Project\routers\ConsoleRouter;
+use Project\routers\Routing;
 use Project\routers\WebRouter;
 
+/**
+ * Class App
+ * @package Project
+ */
 class App
 {
     /**
@@ -32,12 +37,18 @@ class App
 
     public function run()
     {
+        $this->getRouter()->execute();
+    }
+
+    /**
+     * @return Routing
+     */
+    private function getRouter(): Routing
+    {
         if (!isset($_SERVER['REQUEST_URI'])) {
-            $router = new ConsoleRouter();
-        } else {
-            $router = new WebRouter();
+            return new ConsoleRouter();
         }
 
-        $router->execute();
+        return new WebRouter();
     }
 }
