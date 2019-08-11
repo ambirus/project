@@ -215,7 +215,6 @@ class QueryBuilder
     {
         $res = $query->execute($preparedData);
         if (!$res) {
-            var_dump($query); die;
              throw new Exception("DB error while performing the query: " . $sql . " | Errors: " .
                 json_encode($query->errorInfo()));
         }
