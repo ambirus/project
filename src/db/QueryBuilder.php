@@ -71,7 +71,6 @@ class QueryBuilder
 
         $whereParam = $queryInstance->getWhere();
         if (!is_null($whereParam)) {
-
             foreach ($whereParam as $param) {
                 if (!empty($param[1])) {
                     foreach ($param[1] as $key => $value) {
@@ -106,12 +105,21 @@ class QueryBuilder
             $preparedData[$k] = $v;
         }
 
-        $where = '';
-        if (!is_null($this->whereCondition)) {
-            $where = ' WHERE ' . $this->whereCondition;
+        $whereParam = $queryInstance->getWhere();
+
+        if (!is_null($whereParam)) {
+            foreach ($whereParam as $param) {
+                if (!empty($param[1])) {
+                    foreach ($param[1] as $key => $value) {
+                        $preparedData[$key] = $value;
+                    }
+                }
+            }
         }
 
-        $sql = "UPDATE `" . $this->tableName . "`        
+        $where = $this->getWhereCondition($whereParam);
+
+        $sql = "UPDATE `" . $queryInstance->getTableName() . "`        
         SET " . implode(',', $columnsValues) . " {$where}";
 
         $query = $this->connection->prepare($sql);
@@ -120,15 +128,17 @@ class QueryBuilder
     }
 
     /**
+     * @param QueryInstance $queryInstance
      * @return bool
+     * @throws Exception
      */
     public function makeDelete(QueryInstance $queryInstance): bool
     {
-        $where = '';
-        if (!is_null($this->whereCondition)) {
-            $where = ' WHERE ' . $this->whereCondition;
-        }
-        $sql = "DELETE FROM `{$this->tableName}` {$where}";
+        $whereParam = $queryInstance->getWhere();
+        $where = $this->getWhereCondition($whereParam);
+
+        $sql = "DELETE FROM `{$queryInstance->getTableName()}` {$where}";
+
         $query = $this->connection->prepare($sql);
 
         return $this->execute($query);

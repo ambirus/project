@@ -2,6 +2,6 @@
 
 namespace Project;
 
-class Pager
+class Widget
 {
 }
