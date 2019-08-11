@@ -202,10 +202,10 @@ class QueryBuilder
         $where = '';
 
         if (!is_null($whereParam)) {
-            $where = ' WHERE ';
             foreach ($whereParam as $value) {
-                $where .= ' ' . $value[0];
+                $conditions[] = $value[0];
             }
+            $where = ' WHERE ' . implode(' AND ', $conditions);
         }
 
         return $where;
@@ -215,7 +215,8 @@ class QueryBuilder
     {
         $res = $query->execute($preparedData);
         if (!$res) {
-            throw new Exception("DB error while performing the query: " . $sql . " | Errors: " .
+            var_dump($query); die;
+             throw new Exception("DB error while performing the query: " . $sql . " | Errors: " .
                 json_encode($query->errorInfo()));
         }
 
