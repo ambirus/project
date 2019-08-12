@@ -5,6 +5,8 @@ namespace Project\db;
 use PDO;
 use Exception;
 use PDOStatement;
+use Project\exceptions\DbException;
+use Project\values\db\PreparedDataValue;
 
 /**
  * Class QueryBulider
@@ -39,21 +41,15 @@ class QueryBuilder
             throw new Exception("Data required for create method");
         }
 
-        $columns = $values = $preparedData = [];
-
-        foreach ($data as $k => $v) {
-            $columns[] = $k;
-            $values[] = ':' . $k;
-            $preparedData[$k] = $v;
-        }
+        $preparedDataValue = $this->getPreparedDataValue($data);
 
         $sql = "INSERT INTO `" . $queryInstance->getTableName() . "`
-        (" . implode(', ', $columns) . ")
-        VALUES (" . implode(',', $values) . ")";
+        (" . implode(', ', $preparedDataValue->getColumns()) . ")
+        VALUES (" . implode(',', $preparedDataValue->getValues()) . ")";
 
         $query = $this->connection->prepare($sql);
 
-        $this->execute($query, $preparedData);
+        $this->execute($query, $preparedDataValue->getPreparedData());
 
         return $this->connection->lastInsertId();
     }
@@ -66,21 +62,24 @@ class QueryBuilder
     public function makeRead(QueryInstance $queryInstance)
     {
         $sql = $queryInstance->getSql() ?? $this->buildSql($queryInstance);
-
-        $query = $this->connection->prepare($sql);
-
+        $preparedData = [];
         $whereParam = $queryInstance->getWhere();
+
         if (!is_null($whereParam)) {
+            $data = [];
             foreach ($whereParam as $param) {
-                if (!empty($param[1])) {
+                if (isset($param[1])) {
                     foreach ($param[1] as $key => $value) {
-                        $query->bindValue(':' . $key, $value);
+                        $data[$key] = $value;
                     }
                 }
             }
+            $preparedDataValue = $this->getPreparedDataValue($data);
+            $preparedData = $preparedDataValue->getPreparedData();
         }
 
-        $this->execute($query);
+        $query = $this->connection->prepare($sql);
+        $this->execute($query, $preparedData);
 
         return $queryInstance->getOne() ? $query->fetch() : $query->fetchAll();
     }
@@ -98,23 +97,29 @@ class QueryBuilder
             throw new Exception("Data required for update method");
         }
 
-        $columnsValues = $preparedData = [];
+        $preparedDataValue = $this->getPreparedDataValue($data);
 
-        foreach ($data as $k => $v) {
-            $columnsValues[] = $k . ' = ' . ':' . $k;
-            $preparedData[$k] = $v;
+        $columns = $preparedDataValue->getColumns();
+        $values = $preparedDataValue->getValues();
+        $preparedData = $preparedDataValue->getPreparedData();
+
+        foreach ($columns as $key => $column) {
+            $columnsValues[] = $column . ' = ' . $values[$key];
         }
 
         $whereParam = $queryInstance->getWhere();
 
         if (!is_null($whereParam)) {
+            $data = [];
             foreach ($whereParam as $param) {
-                if (!empty($param[1])) {
+                if (isset($param[1])) {
                     foreach ($param[1] as $key => $value) {
-                        $preparedData[$key] = $value;
+                        $data[$key] = $value;
                     }
                 }
             }
+            $preparedDataValue = $this->getPreparedDataValue($data);
+            $preparedData += $preparedDataValue->getPreparedData();
         }
 
         $where = $this->getWhereCondition($whereParam);
@@ -134,14 +139,46 @@ class QueryBuilder
      */
     public function makeDelete(QueryInstance $queryInstance): bool
     {
+        $preparedData = [];
         $whereParam = $queryInstance->getWhere();
+
+        if (!is_null($whereParam)) {
+            $data = [];
+            foreach ($whereParam as $param) {
+                if (isset($param[1])) {
+                    foreach ($param[1] as $key => $value) {
+                        $data[$key] = $value;
+                    }
+                }
+            }
+            $preparedDataValue = $this->getPreparedDataValue($data);
+            $preparedData = $preparedDataValue->getPreparedData();
+        }
+
         $where = $this->getWhereCondition($whereParam);
 
         $sql = "DELETE FROM `{$queryInstance->getTableName()}` {$where}";
 
         $query = $this->connection->prepare($sql);
 
-        return $this->execute($query);
+        return $this->execute($query, $preparedData);
+    }
+
+    /**
+     * @param array $data
+     * @return PreparedDataValue
+     */
+    private function getPreparedDataValue(array $data): PreparedDataValue
+    {
+        $preparedDataValue = new PreparedDataValue();
+
+        foreach ($data as $k => $v) {
+            $preparedDataValue->setColumns($k);
+            $preparedDataValue->setValues(':' . $k);
+            $preparedDataValue->setPreparedData([$k => $v]);
+        }
+
+        return $preparedDataValue;
     }
 
     /**
@@ -211,11 +248,17 @@ class QueryBuilder
         return $where;
     }
 
+    /**
+     * @param PDOStatement $query
+     * @param array $preparedData
+     * @return bool
+     * @throws DbException
+     */
     private function execute(PDOStatement $query, array $preparedData = []): bool
     {
         $res = $query->execute($preparedData);
         if (!$res) {
-             throw new Exception("DB error while performing the query: " . $sql . " | Errors: " .
+            throw new DbException("DB error while performing the query: " . $sql . " | Errors: " .
                 json_encode($query->errorInfo()));
         }
 
