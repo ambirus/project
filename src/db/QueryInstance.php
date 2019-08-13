@@ -23,9 +23,9 @@ class QueryInstance
      */
     private $tableName;
     /**
-     * @var string
+     * @var array
      */
-    private $sql;
+    private $sqlData;
     /**
      * @var string
      */
@@ -85,14 +85,15 @@ class QueryInstance
     /**
      * Example:
      *
-     * query('SELECT id, name FROM table1 WHERE id > 10')
+     * query('SELECT id, name FROM table1 WHERE id > :id', ['id' => 10])
      *
      * @param string $sql
+     * @param array $bindValues
      * @return QueryInstance
      */
-    public function query(string $sql): QueryInstance
+    public function query(string $sql, array $bindValues = []): QueryInstance
     {
-        $this->sql = $sql;
+        $this->sqlData = [$sql, $bindValues];
         return $this;
     }
 
@@ -205,7 +206,7 @@ class QueryInstance
     {
         $this->limit = $count;
         if ($offset > 0) {
-            $this->limit .= ', ' . $offset;
+            $this->limit = $offset . ', ' . $this->limit;
         }
         return $this;
     }
@@ -220,11 +221,11 @@ class QueryInstance
     }
 
     /**
-     * @return null|string
+     * @return null|array
      */
-    public function getSql(): ?string
+    public function getSqlData(): ?array
     {
-        return $this->sql;
+        return $this->sqlData;
     }
 
     /**
@@ -319,6 +320,6 @@ class QueryInstance
 
         $method = 'make' . ucfirst($this->method);
 
-        return (new QueryBuilder())->$method($this);
+        return (new QueryBuilder($this))->$method();
     }
 }

@@ -18,24 +18,29 @@ class QueryBuilder
      * @var PDO
      */
     private $connection;
+    /**
+     * @var QueryInstance
+     */
+    private $queryInstance;
 
     /**
-     * QueryBulider constructor.
+     * QueryBuilder constructor.
+     * @param QueryInstance $queryInstance
      * @throws Exception
      */
-    public function __construct()
+    public function __construct(QueryInstance $queryInstance)
     {
         $this->connection = Mysql::getConnection();
+        $this->queryInstance = $queryInstance;
     }
 
     /**
-     * @param QueryInstance $queryInstance
      * @return string
      * @throws Exception
      */
-    public function makeCreate(QueryInstance $queryInstance): string
+    public function makeCreate(): string
     {
-        $data = $queryInstance->getData();
+        $data = $this->queryInstance->getData();
 
         if (count($data) === 0) {
             throw new Exception("Data required for create method");
@@ -55,43 +60,52 @@ class QueryBuilder
     }
 
     /**
-     * @param QueryInstance $queryInstance
      * @return array|mixed
      * @throws Exception
      */
-    public function makeRead(QueryInstance $queryInstance)
+    public function makeRead()
     {
-        $sql = $queryInstance->getSql() ?? $this->buildSql($queryInstance);
         $preparedData = [];
-        $whereParam = $queryInstance->getWhere();
 
-        if (!is_null($whereParam)) {
-            $data = [];
-            foreach ($whereParam as $param) {
-                if (isset($param[1])) {
-                    foreach ($param[1] as $key => $value) {
-                        $data[$key] = $value;
-                    }
-                }
-            }
-            $preparedDataValue = $this->getPreparedDataValue($data);
-            $preparedData = $preparedDataValue->getPreparedData();
+        $sqlData = $this->queryInstance->getSqlData();
+        $preparedData = $this->getPreparedWheres();
+
+        if (is_null($sqlData)) {
+            $fields = $this->getFields();
+            $joins = $this->getJoins();
+            $wheres = $this->getWheres();
+            $groupBy = $this->getGroupBy();
+            $having = $this->getHaving();
+            $order = $this->getOrder();
+            $limit = $this->getLimit();
+
+            $sql = "SELECT " . $fields . " 
+            FROM `{$this->queryInstance->getTableName()}` 
+            {$joins} 
+            {$wheres} 
+            {$groupBy} 
+            {$having} 
+            {$order} 
+            {$limit}";
+        } else {
+            $sql = $sqlData[0];
+            $bindValues = $sqlData[1];
+            $preparedData += $bindValues;
         }
 
         $query = $this->connection->prepare($sql);
         $this->execute($query, $preparedData);
 
-        return $queryInstance->getOne() ? $query->fetch() : $query->fetchAll();
+        return $this->queryInstance->getOne() ? $query->fetch() : $query->fetchAll();
     }
 
     /**
-     * @param QueryInstance $queryInstance
      * @return bool
      * @throws Exception
      */
-    public function makeUpdate(QueryInstance $queryInstance): bool
+    public function makeUpdate(): bool
     {
-        $data = $queryInstance->getData();
+        $data = $this->queryInstance->getData();
 
         if (count($data) === 0) {
             throw new Exception("Data required for update method");
@@ -107,24 +121,10 @@ class QueryBuilder
             $columnsValues[] = $column . ' = ' . $values[$key];
         }
 
-        $whereParam = $queryInstance->getWhere();
+        $where = $this->getWheres();
+        $preparedData += $this->getPreparedWheres();
 
-        if (!is_null($whereParam)) {
-            $data = [];
-            foreach ($whereParam as $param) {
-                if (isset($param[1])) {
-                    foreach ($param[1] as $key => $value) {
-                        $data[$key] = $value;
-                    }
-                }
-            }
-            $preparedDataValue = $this->getPreparedDataValue($data);
-            $preparedData += $preparedDataValue->getPreparedData();
-        }
-
-        $where = $this->getWhereCondition($whereParam);
-
-        $sql = "UPDATE `" . $queryInstance->getTableName() . "`        
+        $sql = "UPDATE `" . $this->queryInstance->getTableName() . "`        
         SET " . implode(',', $columnsValues) . " {$where}";
 
         $query = $this->connection->prepare($sql);
@@ -133,31 +133,15 @@ class QueryBuilder
     }
 
     /**
-     * @param QueryInstance $queryInstance
      * @return bool
      * @throws Exception
      */
-    public function makeDelete(QueryInstance $queryInstance): bool
+    public function makeDelete(): bool
     {
-        $preparedData = [];
-        $whereParam = $queryInstance->getWhere();
+        $where = $this->getWheres();
+        $preparedData = $this->getPreparedWheres();
 
-        if (!is_null($whereParam)) {
-            $data = [];
-            foreach ($whereParam as $param) {
-                if (isset($param[1])) {
-                    foreach ($param[1] as $key => $value) {
-                        $data[$key] = $value;
-                    }
-                }
-            }
-            $preparedDataValue = $this->getPreparedDataValue($data);
-            $preparedData = $preparedDataValue->getPreparedData();
-        }
-
-        $where = $this->getWhereCondition($whereParam);
-
-        $sql = "DELETE FROM `{$queryInstance->getTableName()}` {$where}";
+        $sql = "DELETE FROM `{$this->queryInstance->getTableName()}` {$where}";
 
         $query = $this->connection->prepare($sql);
 
@@ -182,70 +166,129 @@ class QueryBuilder
     }
 
     /**
-     * @param QueryInstance $queryInstance
      * @return string
      */
-    private function buildSql(QueryInstance $queryInstance): string
+    private function getFields(): string
     {
-        $fields = $queryInstance->getFields() ?? "`{$queryInstance->getTableName()}`.*";
-        $join = $where = $groupBy = $having = $order = '';
-        $limit = ' LIMIT ' . $queryInstance->getLimit();
-
-        $joinParam = $queryInstance->getJoin();
-
-        if (!is_null($joinParam)) {
-            foreach ($joinParam as $value) {
-                $join .= ' ' . $value[2] . ' JOIN ' . $value[0] . ' ON ' . $value[1];
-            }
-        }
-
-        $whereParam = $queryInstance->getWhere();
-        $where = $this->getWhereCondition($whereParam);
-
-        if (!is_null($queryInstance->getGroupBy())) {
-            $groupBy = ' GROUP BY ' . $queryInstance->getGroupBy();
-        }
-
-        if (!is_null($queryInstance->getHaving())) {
-            $having = ' HAVING ' . $queryInstance->getHaving();
-        }
-
-        $orderParam = $queryInstance->getOrder();
-
-        if (!is_null($orderParam)) {
-            $order = ' ORDER BY ';
-            foreach ($orderParam as $value) {
-                $tmp[] = ' ' . $value[0] . ' ' . $value[1];
-            }
-            $order .= implode(', ', $tmp);
-        }
-
-        return "SELECT " . $fields . " 
-        FROM `{$queryInstance->getTableName()}` 
-        {$join} 
-        {$where} 
-        {$groupBy} 
-        {$having} 
-        {$order} 
-        {$limit}";
+        return $this->queryInstance->getFields() ?? '`'. $this->queryInstance->getTableName() . '`' . '.*';
     }
 
     /**
-     * @param array|null $whereParam
      * @return string
      */
-    private function getWhereCondition(?array $whereParam): string
+    private function getJoins(): string
     {
-        $where = '';
+        $joins = $this->queryInstance->getJoin();
 
-        if (!is_null($whereParam)) {
-            foreach ($whereParam as $value) {
-                $conditions[] = $value[0];
-            }
-            $where = ' WHERE ' . implode(' AND ', $conditions);
+        if (is_null($joins)) {
+            return '';
         }
 
-        return $where;
+        $joinArr = [];
+
+        foreach ($joins as $join) {
+            $joinArr[] = $join[2] . ' JOIN ' . $join[0] . ' ON ' . $join[1];
+        }
+
+        return implode(' ', $joinArr);
+    }
+
+    /**
+     * @return string
+     */
+    private function getWheres(): string
+    {
+        $wheres = $this->queryInstance->getWhere();
+
+        if (is_null($wheres)) {
+            return '';
+        }
+
+        $whereArr = [];
+
+        foreach ($wheres as $where) {
+            $whereArr[] = $where[0];
+        }
+
+        return ' WHERE ' . implode(' AND ', $whereArr);
+    }
+
+    /**
+     * @return string
+     */
+    private function getGroupBy(): string
+    {
+        $groupBy = $this->queryInstance->getGroupBy();
+
+        if (is_null($groupBy)) {
+            return '';
+        }
+
+        return ' GROUP BY ' . $groupBy;
+    }
+
+    /**
+     * @return string
+     */
+    private function getHaving(): string
+    {
+        $having = $this->queryInstance->getHaving();
+
+        if (is_null($having)) {
+            return '';
+        }
+
+        return ' HAVING ' . $having;
+    }
+
+    /**
+     * @return string
+     */
+    private function getOrder(): string
+    {
+        $orders = $this->queryInstance->getOrder();
+
+        if (is_null($orders)) {
+            return '';
+        }
+
+        foreach ($orders as $order) {
+            $tmp[] = ' ' . $order[0] . ' ' . $order[1];
+        }
+
+        return ' ORDER BY ' . implode(', ', $tmp);
+    }
+
+    /**
+     * @return string
+     */
+    private function getLimit(): string
+    {
+        return ' LIMIT ' . $this->queryInstance->getLimit();
+    }
+
+    /**
+     * @return array
+     */
+    private function getPreparedWheres(): array
+    {
+        $wheres = $this->queryInstance->getWhere();
+
+        if (is_null($wheres)) {
+            return [];
+        }
+
+        $whereArr = [];
+
+        foreach ($wheres as $where) {
+            if (isset($where[1])) {
+                foreach ($where[1] as $k => $v) {
+                    $whereArr[$k] = $v;
+                }
+            }
+        }
+
+        return $whereArr;
     }
 
     /**
@@ -257,8 +300,9 @@ class QueryBuilder
     private function execute(PDOStatement $query, array $preparedData = []): bool
     {
         $res = $query->execute($preparedData);
+
         if (!$res) {
-            throw new DbException("DB error while performing the query: " . $sql . " | Errors: " .
+            throw new DbException("DB error while performing the query: " . $query->queryString . " | Errors: " .
                 json_encode($query->errorInfo()));
         }
 
