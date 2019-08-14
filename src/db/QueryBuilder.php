@@ -48,7 +48,7 @@ class QueryBuilder
 
         $preparedDataValue = $this->getPreparedDataValue($data);
 
-        $sql = "INSERT INTO `" . $queryInstance->getTableName() . "`
+        $sql = "INSERT INTO `" . $this->queryInstance->getTableName() . "`
         (" . implode(', ', $preparedDataValue->getColumns()) . ")
         VALUES (" . implode(',', $preparedDataValue->getValues()) . ")";
 
