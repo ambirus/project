@@ -37,9 +37,9 @@ class View
 
         if (!empty(WebRouter::getCurrentModuleName())) {
             $this->viewsPath = str_replace('application', 'application' . DIRECTORY_SEPARATOR . 'modules'
-                . DIRECTORY_SEPARATOR . WebRouter::getCurrentModuleName() . DIRECTORY_SEPARATOR, $this->viewsPath);
+                . DIRECTORY_SEPARATOR . WebRouter::getCurrentModuleName(), $this->viewsPath);
         }
-        $this->templatesPath = $this->viewsPath . WebRouter::getCurrentControllerName() . DIRECTORY_SEPARATOR;
+        $this->templatesPath = $this->viewsPath . WebRouter::getCurrentControllerName();
     }
 
     /**
@@ -50,7 +50,7 @@ class View
      */
     public function render(string $view, array $params = [], bool $isPartial = false)
     {
-        $templateFile = $this->templatesPath . $view . '.php';
+        $templateFile = $this->templatesPath . DIRECTORY_SEPARATOR . $view . '.php';
 
         if (file_exists($templateFile)) {
             ob_start();
