@@ -257,7 +257,8 @@ class QueryBuilder
      */
     private function getLimit(): string
     {
-        return ' LIMIT ' . $this->queryInstance->getLimit();
+        $limit = $this->queryInstance->getLimit();
+        return empty($limit) ? '' : ' LIMIT ' . $limit;
     }
 
     /**
