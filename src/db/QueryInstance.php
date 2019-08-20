@@ -2,6 +2,7 @@
 
 namespace Project\db;
 
+use application\models\entities\Country;
 use Exception;
 use Project\dictionaries\db\OrderDirectionsDictionary;
 use ReflectionException;
@@ -19,9 +20,9 @@ class QueryInstance
      */
     private $method;
     /**
-     * @var string
+     * @var Table
      */
-    private $tableName;
+    private $tableInstance;
     /**
      * @var array
      */
@@ -68,17 +69,17 @@ class QueryInstance
      *
      * Example:
      *
-     * new QueryInstance('create', 'table1', ['id' => 1, 'name' => 'Peter'])
+     * new QueryInstance('create', new Users(), ['id' => 1, 'name' => 'Peter'])
      *
      * @param string $method
-     * @param string $tableName
+     * @param Table $tableInstance
      * @param array $data
      * @throws Exception
      */
-    public function __construct(string $method, string $tableName, array $data = [])
+    public function __construct(string $method, Table $tableInstance, array $data = [])
     {
         $this->method = $method;
-        $this->tableName = $tableName;
+        $this->tableInstance = $tableInstance;
         $this->data = $data;
     }
 
@@ -134,15 +135,15 @@ class QueryInstance
     /**
      * Example:
      *
-     * where('id = :id OR name = :name', ['id' => 1, 'name' => 'Peter'], ['id' => PDO::PARAM_INT])
+     * where('id = :id OR name = :name', ['id' => 1, 'name' => 'Peter'])
      *
      * @param string $condition
      * @param array $bindValues
      * @return QueryInstance
      */
-    public function where(string $condition, array $bindValues = [], array $bindValuesTypes = []): QueryInstance
+    public function where(string $condition, array $bindValues = []): QueryInstance
     {
-        $this->where[] = [$condition, $bindValues, $bindValuesTypes];
+        $this->where[] = [$condition, $bindValues];
         return $this;
     }
 
@@ -293,11 +294,11 @@ class QueryInstance
     }
 
     /**
-     * @return string
+     * @return Table
      */
-    public function getTableName(): string
+    public function getTableInstance(): Table
     {
-        return $this->tableName;
+        return $this->tableInstance;
     }
 
     /**

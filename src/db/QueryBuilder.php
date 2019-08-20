@@ -48,7 +48,7 @@ class QueryBuilder
 
         $preparedDataValue = $this->getPreparedDataValue($data);
 
-        $sql = "INSERT INTO `" . $this->queryInstance->getTableName() . "`
+        $sql = "INSERT INTO `" . $this->queryInstance->getTableInstance()->getName() . "`
         (" . implode(', ', $preparedDataValue->getColumns()) . ")
         VALUES (" . implode(',', $preparedDataValue->getValues()) . ")";
 
@@ -80,7 +80,7 @@ class QueryBuilder
             $limit = $this->getLimit();
 
             $sql = "SELECT " . $fields . " 
-            FROM `{$this->queryInstance->getTableName()}` 
+            FROM `{$this->queryInstance->getTableInstance()->getName()}` 
             {$joins} 
             {$wheres} 
             {$groupBy} 
@@ -124,7 +124,7 @@ class QueryBuilder
         $where = $this->getWheres();
         $preparedData += $this->getPreparedWheres();
 
-        $sql = "UPDATE `" . $this->queryInstance->getTableName() . "`        
+        $sql = "UPDATE `" . $this->queryInstance->getTableInstance()->getName() . "`        
         SET " . implode(',', $columnsValues) . " {$where}";
 
         $query = $this->connection->prepare($sql);
@@ -141,7 +141,7 @@ class QueryBuilder
         $where = $this->getWheres();
         $preparedData = $this->getPreparedWheres();
 
-        $sql = "DELETE FROM `{$this->queryInstance->getTableName()}` {$where}";
+        $sql = "DELETE FROM `{$this->queryInstance->getTableInstance()->getName()}` {$where}";
 
         $query = $this->connection->prepare($sql);
 
@@ -170,7 +170,7 @@ class QueryBuilder
      */
     private function getFields(): string
     {
-        return $this->queryInstance->getFields() ?? '`'. $this->queryInstance->getTableName() . '`' . '.*';
+        return $this->queryInstance->getFields() ?? '`'. $this->queryInstance->getTableInstance()->getName() . '`' . '.*';
     }
 
     /**

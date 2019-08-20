@@ -17,6 +17,11 @@ abstract class Table
     protected $name;
 
     /**
+     * @var array
+     */
+    protected $definitions = [];
+
+    /**
      * Table constructor.
      * @throws Exception
      */
@@ -25,6 +30,22 @@ abstract class Table
         if (is_null($this->name)) {
             throw new Exception("Table name is required");
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefinitions(): array
+    {
+        return $this->definitions;
     }
 
     /**
@@ -40,7 +61,7 @@ abstract class Table
      */
     public function create(array $data): QueryInstance
     {
-        return new QueryInstance(MethodsDictionary::CREATE, $this->name, $data);
+        return new QueryInstance(MethodsDictionary::CREATE, $this, $data);
     }
 
     /**
@@ -55,7 +76,7 @@ abstract class Table
      */
     public function read(): QueryInstance
     {
-        return new QueryInstance(MethodsDictionary::READ, $this->name);
+        return new QueryInstance(MethodsDictionary::READ, $this);
     }
 
     /**
@@ -71,7 +92,7 @@ abstract class Table
      */
     public function update(array $data): QueryInstance
     {
-        return new QueryInstance(MethodsDictionary::UPDATE, $this->name, $data);
+        return new QueryInstance(MethodsDictionary::UPDATE, $this, $data);
     }
 
     /**
@@ -86,6 +107,6 @@ abstract class Table
      */
     public function delete(): QueryInstance
     {
-        return new QueryInstance(MethodsDictionary::DELETE, $this->name);
+        return new QueryInstance(MethodsDictionary::DELETE, $this);
     }
 }
