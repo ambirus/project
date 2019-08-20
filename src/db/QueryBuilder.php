@@ -52,7 +52,9 @@ class QueryBuilder
         (" . implode(', ', $preparedDataValue->getColumns()) . ")
         VALUES (" . implode(',', $preparedDataValue->getValues()) . ")";
 
-        $this->execute($sql, $preparedDataValue->getPreparedData());
+        $query = $this->connection->prepare($sql);
+
+        $this->execute($query, $preparedDataValue->getPreparedData());
 
         return $this->connection->lastInsertId();
     }
@@ -90,8 +92,9 @@ class QueryBuilder
             $bindValues = $sqlData[1];
             $preparedData += $bindValues;
         }
-        
-        $this->execute($sql, $preparedData);
+
+        $query = $this->connection->prepare($sql);
+        $this->execute($query, $preparedData);
 
         return $this->queryInstance->getOne() ? $query->fetch() : $query->fetchAll();
     }
@@ -124,7 +127,9 @@ class QueryBuilder
         $sql = "UPDATE `" . $this->queryInstance->getTableName() . "`        
         SET " . implode(',', $columnsValues) . " {$where}";
 
-        return $this->execute($sql, $preparedData);
+        $query = $this->connection->prepare($sql);
+
+        return $this->execute($query, $preparedData);
     }
 
     /**
@@ -138,7 +143,9 @@ class QueryBuilder
 
         $sql = "DELETE FROM `{$this->queryInstance->getTableName()}` {$where}";
 
-        return $this->execute($sql, $preparedData);
+        $query = $this->connection->prepare($sql);
+
+        return $this->execute($query, $preparedData);
     }
 
     /**
@@ -286,14 +293,13 @@ class QueryBuilder
     }
 
     /**
-     * @param string $sql
+     * @param PDOStatement $query
      * @param array $preparedData
      * @return bool
      * @throws DbException
      */
-    private function execute(string $sql, array $preparedData = []): bool
+    private function execute(PDOStatement $query, array $preparedData = []): bool
     {
-        $query = $this->connection->prepare($sql);
         $res = $query->execute($preparedData);
 
         if (!$res) {
