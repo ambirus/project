@@ -36,7 +36,9 @@ class Mysql
     public static function getConnection()
     {
         if (self::$connection === null) {
-            $dbConfig = App::getConfig()->get('db');
+            $dbConfigFile = !defined('ENV_TEST') ? 'db' : 'db_test';
+            $dbConfig = App::getConfig()->get($dbConfigFile);
+
             self::$connection = new PDO(
                 'mysql:host=' . $dbConfig['host'] . ';dbname=' . $dbConfig['database'],
                 $dbConfig['login'],
