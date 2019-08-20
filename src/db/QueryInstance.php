@@ -134,15 +134,15 @@ class QueryInstance
     /**
      * Example:
      *
-     * where('id = :id OR name = :name', ['id' => 1, 'name' => 'Peter'])
+     * where('id = :id OR name = :name', ['id' => 1, 'name' => 'Peter'], ['id' => PDO::PARAM_INT])
      *
      * @param string $condition
      * @param array $bindValues
      * @return QueryInstance
      */
-    public function where(string $condition, array $bindValues = []): QueryInstance
+    public function where(string $condition, array $bindValues = [], array $bindValuesTypes = []): QueryInstance
     {
-        $this->where[] = [$condition, $bindValues];
+        $this->where[] = [$condition, $bindValues, $bindValuesTypes];
         return $this;
     }
 
