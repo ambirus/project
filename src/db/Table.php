@@ -22,6 +22,11 @@ abstract class Table
     protected $definitions = [];
 
     /**
+     * @var QueryInstance
+     */
+    private $queryInstance;
+
+    /**
      * Table constructor.
      * @throws Exception
      */
@@ -30,6 +35,8 @@ abstract class Table
         if (is_null($this->name)) {
             throw new Exception("Table name is required");
         }
+        
+        $this->queryInstance = new QueryInstance($tableInstance);
     }
 
     /**
@@ -61,7 +68,7 @@ abstract class Table
      */
     public function create(array $data): QueryInstance
     {
-        return new QueryInstance(MethodsDictionary::CREATE, $this, $data);
+        return $this->queryInstance->re//new QueryInstance(MethodsDictionary::CREATE, $this, $data);
     }
 
     /**

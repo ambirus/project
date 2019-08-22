@@ -79,6 +79,10 @@ class QueryBuilder
             $order = $this->getOrder();
             $limit = $this->getLimit();
 
+            if(!empty($limit)) {
+                $fields = "SQL_CALC_FOUND_ROWS " . $fields;
+            }
+
             $sql = "SELECT " . $fields . " 
             FROM `{$this->queryInstance->getTableInstance()->getName()}` 
             {$joins} 
@@ -96,7 +100,18 @@ class QueryBuilder
         $query = $this->connection->prepare($sql);
         $this->execute($query, $preparedData);
 
-        return $this->queryInstance->getOne() ? $query->fetch() : $query->fetchAll();
+        if ($this->queryInstance->getOne()) {
+            return $query->fetch();
+        }
+
+        if(!empty($limit)) {
+            $queryGetTotalCount = $this->connection->prepare("SELECT FOUND_ROWS() AS totalCount");
+            $this->execute($queryGetTotalCount);
+            $result = $queryGetTotalCount->fetch();
+            $this->queryInstance->setTotalCount($result['totalCount']);
+        }
+        
+        return $query->fetchAll();
     }
 
     /**

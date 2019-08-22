@@ -63,24 +63,25 @@ class QueryInstance
      * @var array
      */
     private $data;
+    /**
+     * @var int
+     */
+    private $totalCount = 0;
 
     /**
      * QueryInstance constructor.
      *
      * Example:
      *
-     * new QueryInstance('create', new Users(), ['id' => 1, 'name' => 'Peter'])
+     * new QueryInstance(new Users())
      *
-     * @param string $method
      * @param Table $tableInstance
      * @param array $data
      * @throws Exception
      */
-    public function __construct(string $method, Table $tableInstance, array $data = [])
+    public function __construct(Table $tableInstance)
     {
-        $this->method = $method;
         $this->tableInstance = $tableInstance;
-        $this->data = $data;
     }
 
     /**
@@ -307,6 +308,22 @@ class QueryInstance
     public function getData(): array
     {
         return $this->data;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount(): int
+    {
+        return $this->totalCount;
+    }
+
+    /**
+     * @param int $totalCount
+     */
+    public function setTotalCount(int $totalCount)
+    {
+        $this->totalCount = $totalCount;
     }
 
     /**
