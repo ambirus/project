@@ -63,25 +63,24 @@ class QueryInstance
      * @var array
      */
     private $data;
-    /**
-     * @var int
-     */
-    private $totalCount = 0;
 
     /**
      * QueryInstance constructor.
      *
      * Example:
      *
-     * new QueryInstance(new Users())
+     * new QueryInstance('create', new Users(), ['id' => 1, 'name' => 'Peter'])
      *
+     * @param string $method
      * @param Table $tableInstance
      * @param array $data
      * @throws Exception
      */
-    public function __construct(Table $tableInstance)
+    public function __construct(string $method, Table $tableInstance, array $data = [])
     {
+        $this->method = $method;
         $this->tableInstance = $tableInstance;
+        $this->data = $data;
     }
 
     /**
@@ -311,24 +310,8 @@ class QueryInstance
     }
 
     /**
-     * @return int
-     */
-    public function getTotalCount(): int
-    {
-        return $this->totalCount;
-    }
-
-    /**
-     * @param int $totalCount
-     */
-    public function setTotalCount(int $totalCount)
-    {
-        $this->totalCount = $totalCount;
-    }
-
-    /**
-     * @return array|mixed|string
-     * @throws Exception
+     * @return mixed
+     * @throws ReflectionException
      */
     public function execute()
     {
@@ -337,7 +320,14 @@ class QueryInstance
         }
 
         $method = 'make' . ucfirst($this->method);
+        $result = (new QueryBuilder($this))->$method();
 
-        return (new QueryBuilder($this))->$method();
+        if (!empty($result['items'])) {
+            $this->tableInstance->setTotalCount($result['totalCount']);
+
+            return $result['items'];
+        }
+
+        return $result;
     }
 }

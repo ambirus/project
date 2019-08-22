@@ -22,9 +22,9 @@ abstract class Table
     protected $definitions = [];
 
     /**
-     * @var QueryInstance
+     * @var int
      */
-    private $queryInstance;
+    protected $totalCount = 0;
 
     /**
      * Table constructor.
@@ -35,8 +35,6 @@ abstract class Table
         if (is_null($this->name)) {
             throw new Exception("Table name is required");
         }
-        
-        $this->queryInstance = new QueryInstance($tableInstance);
     }
 
     /**
@@ -56,6 +54,23 @@ abstract class Table
     }
 
     /**
+     * @param int $totalCount
+     */
+    public function setTotalCount(int $totalCount)
+    {
+        $this->totalCount = $totalCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalCount(): int
+    {
+        var_dump($this->totalCount);
+        return $this->totalCount;
+    }
+
+    /**
      * Example:
      *
      * (new Post())
@@ -68,7 +83,7 @@ abstract class Table
      */
     public function create(array $data): QueryInstance
     {
-        return $this->queryInstance->re//new QueryInstance(MethodsDictionary::CREATE, $this, $data);
+        return new QueryInstance(MethodsDictionary::CREATE, $this, $data);
     }
 
     /**
