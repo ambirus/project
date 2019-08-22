@@ -5,6 +5,10 @@ namespace Project;
 use Exception;
 use Project\routers\WebRouter;
 
+/**
+ * Class View
+ * @package Project
+ */
 class View
 {
     /**
@@ -23,23 +27,28 @@ class View
     /**
      * View constructor.
      */
-    public function __construct()
+    public function __construct(string $viewsPath = '')
     {
         $this->viewsPath = __DIR__;
+        $applicationPath = DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR;
 
         for ($i = 0; $i < 4; $i++) {
             $this->viewsPath .= DIRECTORY_SEPARATOR . '..';
         }
-        $this->viewsPath .= DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'application' . DIRECTORY_SEPARATOR
-            . 'views' . DIRECTORY_SEPARATOR;
 
-        $this->layoutFile = $this->viewsPath . 'layouts' . DIRECTORY_SEPARATOR . 'main.php';
+        if (!empty($viewsPath)) {
+            $this->templatesPath = $this->viewsPath . $applicationPath . $viewsPath;
+        } else {
+            $this->viewsPath .= $applicationPath . 'views' . DIRECTORY_SEPARATOR;
 
-        if (!empty(WebRouter::getCurrentModuleName())) {
-            $this->viewsPath = str_replace('application', 'application' . DIRECTORY_SEPARATOR . 'modules'
-                . DIRECTORY_SEPARATOR . WebRouter::getCurrentModuleName(), $this->viewsPath);
+            $this->layoutFile = $this->viewsPath . 'layouts' . DIRECTORY_SEPARATOR . 'main.php';
+
+            if (!empty(WebRouter::getCurrentModuleName())) {
+                $this->viewsPath = str_replace('application', 'application' . DIRECTORY_SEPARATOR . 'modules'
+                    . DIRECTORY_SEPARATOR . WebRouter::getCurrentModuleName(), $this->viewsPath);
+            }
+            $this->templatesPath = $this->viewsPath . WebRouter::getCurrentControllerName();
         }
-        $this->templatesPath = $this->viewsPath . WebRouter::getCurrentControllerName();
     }
 
     /**

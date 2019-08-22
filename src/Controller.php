@@ -12,6 +12,6 @@ abstract class Controller
             $this->init();
         }
 
-        $this->view = new View($this);
+        $this->view = new View();
     }
 }

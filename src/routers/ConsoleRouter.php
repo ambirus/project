@@ -11,6 +11,10 @@ class ConsoleRouter implements Routing
      */
     public function execute()
     {
+        if (empty($_SERVER['argv'][1]) || strpos($_SERVER['argv'][0], 'filmparser') != true) {
+            return;
+        }
+
         $commandName = 'Import';
         $actionName = 'Index';
 
@@ -21,10 +25,6 @@ class ConsoleRouter implements Routing
             for ($i = 2; $i < $_SERVER['argc']; $i++) {
                 $params[] = $_SERVER['argv'][$i];
             }
-        }
-
-        if (!isset($_SERVER['argv'][1])) {
-            return;
         }
 
         $routes = explode('/', $_SERVER['argv'][1]);

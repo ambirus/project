@@ -56,6 +56,10 @@ class QueryInstance
      */
     private $limit = 20;
     /**
+     * @var string
+     */
+    private $offset;
+    /**
      * @var bool
      */
     private $one;
@@ -197,17 +201,29 @@ class QueryInstance
     /**
      * Example:
      *
-     * limit(10, 10)
+     * limit(10)
      *
      * @param int $count
-     * @param int $offset
      * @return QueryInstance
      */
-    public function limit(int $count, int $offset = 0): QueryInstance
+    public function limit(int $count): QueryInstance
     {
         $this->limit = $count;
-        if ($offset > 0) {
-            $this->limit = $offset . ', ' . $this->limit;
+        return $this;
+    }
+
+    /**
+     * Example:
+     *
+     * offset(10)
+     *
+     * @param int $count
+     * @return QueryInstance
+     */
+    public function offset(int $count): QueryInstance
+    {
+        if ($count > 0) {
+            $this->limit .= ', ' . $count;
         }
         return $this;
     }

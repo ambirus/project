@@ -176,17 +176,20 @@ class WebRouter implements Routing
      */
     private function getParams(string $paramsStr): array
     {
+        $actionParams = [];
+
+        if (!empty($_GET['page'])) {
+            $actionParams['page'] = intval($_GET['page']);
+        }
+
         if (!empty($paramsStr)) {
             $params = explode('&', $paramsStr);
-            $actionParams = [];
-
             foreach ($params as $param) {
                 $tmp = explode('=', $param);
                 $actionParams[$tmp[0]] = $tmp[1] ?? null;
             }
-            return $actionParams;
         }
 
-        return [];
+        return $actionParams;
     }
 }

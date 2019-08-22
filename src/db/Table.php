@@ -66,7 +66,6 @@ abstract class Table
      */
     public function getTotalCount(): int
     {
-        var_dump($this->totalCount);
         return $this->totalCount;
     }
 

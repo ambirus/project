@@ -18,7 +18,8 @@ class Pager
 	public function get(): PagerDataValue
 	{
 		$pagerDataValue = new PagerDataValue();
-		
+
+		$endValue = ceil($this->totalCount / 20);
 		return $pagerDataValue;
 	}
 }
