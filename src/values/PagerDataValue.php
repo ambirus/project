@@ -2,6 +2,9 @@
 
 namespace Project\values;
 
+use ReflectionClass;
+use ReflectionException;
+
 /**
  * Class PagerDataValue
  * @package Project\values
@@ -9,13 +12,33 @@ namespace Project\values;
 class PagerDataValue
 {
     /**
+     * @var bool
+     */
+    private $lt;
+    /**
      * @var int
      */
-    private $startValue = 1;
+    private $startValue;
+    /**
+     * @var bool
+     */
+    private $needLeftDots;
+    /**
+     * @var array
+     */
+    private $body;
+    /**
+     * @var bool
+     */
+    private $needRightDots;
     /**
      * @var int
      */
     private $endValue;
+    /**
+     * @var bool
+     */
+    private $rt;
     /**
      * @var int
      */
@@ -28,14 +51,14 @@ class PagerDataValue
      * @var int
      */
     private $rightValue;
+
     /**
-     * @var int
+     * @return bool
      */
-    private $countInARow = 6;
-    /**
-     * @var bool
-     */
-    private $needSeparator = false;
+    public function getLt(): bool
+    {
+        return $this->lt;
+    }
 
     /**
      * @return int
@@ -46,11 +69,43 @@ class PagerDataValue
     }
 
     /**
+     * @return bool
+     */
+    public function getLeftDots(): bool
+    {
+        return $this->needLeftDots;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBody(): array
+    {
+        return $this->body;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRightDots(): bool
+    {
+        return $this->needRightDots;
+    }
+
+    /**
      * @return int
      */
     public function getEndValue(): int
     {
         return $this->endValue;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRt(): bool
+    {
+        return $this->rt;
     }
 
     /**
@@ -76,18 +131,24 @@ class PagerDataValue
     {
         return $this->rightValue;
     }
+
     /**
-     * @return int
+     * @param array $data
+     * @return PagerDataValue
+     * @throws ReflectionException
      */
-    public function getCountInARow(): int
+    public function load(array $data): PagerDataValue
     {
-        return $this->countInARow;
-    }
-    /**
-     * @return bool
-     */
-    public function getNeedSeparator(): bool
-    {
-        return $this->needSeparator;
+        $props = (new ReflectionClass($this))->getProperties();
+
+        foreach ($props as $prop) {
+            $propName = $prop->getName();
+
+            if (isset($data[$propName])) {
+                $this->$propName = $data[$propName];
+            }
+        }
+
+        return $this;
     }
 }

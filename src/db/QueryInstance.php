@@ -223,7 +223,7 @@ class QueryInstance
     public function offset(int $count): QueryInstance
     {
         if ($count > 0) {
-            $this->limit .= ', ' . $count;
+            $this->limit = $count . ', ' . $this->limit;
         }
         return $this;
     }
