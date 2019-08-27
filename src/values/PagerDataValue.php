@@ -14,7 +14,7 @@ class PagerDataValue
     /**
      * @var bool
      */
-    private $lt;
+    private $lt = false;
     /**
      * @var int
      */
@@ -22,23 +22,23 @@ class PagerDataValue
     /**
      * @var bool
      */
-    private $needLeftDots;
+    private $needLeftDots = false;
     /**
      * @var array
      */
-    private $body;
+    private $body = [];
     /**
      * @var bool
      */
-    private $needRightDots;
+    private $needRightDots = false;
     /**
      * @var int
      */
-    private $endValue;
+    private $endValue = 0;
     /**
      * @var bool
      */
-    private $rt;
+    private $rt = false;
     /**
      * @var int
      */
@@ -51,6 +51,10 @@ class PagerDataValue
      * @var int
      */
     private $rightValue;
+    /**
+     * @var bool
+     */
+    private $isEmpty = true;
 
     /**
      * @return bool
@@ -133,6 +137,14 @@ class PagerDataValue
     }
 
     /**
+     * @return bool
+     */
+    public function getIsEmpty(): bool
+    {
+        return $this->isEmpty;
+    }
+
+    /**
      * @param array $data
      * @return PagerDataValue
      * @throws ReflectionException
@@ -148,7 +160,8 @@ class PagerDataValue
                 $this->$propName = $data[$propName];
             }
         }
-
+        $this->isEmpty = false;
+        
         return $this;
     }
 }

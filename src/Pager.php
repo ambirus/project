@@ -6,6 +6,8 @@ use Project\values\PagerDataValue;
 
 class Pager
 {
+    const PAGER_LIMIT = 20;
+
     private $totalCount;
     private $currValue;
 
@@ -20,24 +22,46 @@ class Pager
      */
     public function get(): PagerDataValue
     {
-        $endValue = (int)ceil($this->totalCount / 20);
-        $body = [];
-        if ($endValue > 2) {
-            for ($i = 2; $i < $endValue; $i++) {
-                $body[] = $i;
-            }
+        if ($this->totalCount <= self::PAGER_LIMIT) {
+            return new PagerDataValue();
         }
+
+        $endValue = (int)ceil($this->totalCount / self::PAGER_LIMIT);
+        $body = [];
+        $leftBody = $this->currValue - 3;
+        $rightBody = $this->currValue + 3;
+
+        if ($leftBody >= 0) {
+            for ($i = $this->currValue; $i >= $leftBody; $i--) {
+                if ($i > 1) {
+                    $body[] = $i;
+                }
+            }    
+        }
+
+        if ($rightBody < $endValue) {
+            for ($i = $this->currValue; $i <= $rightBody; $i++) {
+                if ($i != 1) {
+                    $body[] = $i;    
+                }                
+            }    
+        }        
+
+        sort($body);
+
         $data = [
             'lt' => $this->currValue > 1 ? true : false,
-            'startValue' => 1,
-            'needLeftDots' => $this->currValue > 6 ? true : false,
-            'body' => $body,
-            'needRightDots' => $end - $this->currValue < 6 ? false : true,
-            'endValue' => $endValue,
             'rt' => $this->currValue < $endValue ? true : false,
-            'currentValue' => $this->currValue,
+            'startValue' => 1,
+            'endValue' => $endValue,
             'leftValue' => $this->currValue - 1,
+            'currentValue' => $this->currValue,
             'rightValue' => $this->currValue + 1,
+            'needLeftDots' => $this->currValue + 3 >= 10 ? true : false,
+            'body' => array_unique($body),
+            'needRightDots' => $endValue - $this->currValue < 6 ? false : true,
+            
+
 
         ];
 
