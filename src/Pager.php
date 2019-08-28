@@ -31,7 +31,7 @@ class Pager
         $leftBody = $this->currValue - 3;
         $rightBody = $this->currValue + 3;
 
-        if ($leftBody >= 1) {
+        if ($leftBody >= 1 || $leftBody < 1) {
             for ($i = $this->currValue; $i >= $leftBody; $i--) {
                 if ($i > 1 && $i < $endValue) {
                     $body[] = $i;
