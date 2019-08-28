@@ -14,7 +14,7 @@ class Pager
     public function __construct(int $totalCount, int $currValue = 1)
     {
         $this->totalCount = $totalCount;
-        $this->currValue = $currValue;
+        $this->currValue = $currValue > 0 ? $currValue : 1;
     }
 
     /**
@@ -31,21 +31,21 @@ class Pager
         $leftBody = $this->currValue - 3;
         $rightBody = $this->currValue + 3;
 
-        if ($leftBody >= 0) {
+        if ($leftBody >= 1) {
             for ($i = $this->currValue; $i >= $leftBody; $i--) {
-                if ($i > 1) {
+                if ($i > 1 && $i != $endValue) {
                     $body[] = $i;
                 }
-            }    
+            }
         }
 
-        if ($rightBody < $endValue) {
+        if ($rightBody <= $endValue || $rightBody > $endValue) {
             for ($i = $this->currValue; $i <= $rightBody; $i++) {
-                if ($i != 1) {
-                    $body[] = $i;    
-                }                
-            }    
-        }        
+                if ($i < $endValue) {
+                    $body[] = $i;
+                }
+            }
+        }
 
         sort($body);
 
@@ -57,12 +57,9 @@ class Pager
             'leftValue' => $this->currValue - 1,
             'currentValue' => $this->currValue,
             'rightValue' => $this->currValue + 1,
-            'needLeftDots' => $this->currValue + 3 >= 10 ? true : false,
+            'needLeftDots' => $this->currValue + 4 >= 10 ? true : false,
             'body' => array_unique($body),
-            'needRightDots' => $endValue - $this->currValue < 6 ? false : true,
-            
-
-
+            'needRightDots' => $endValue - $this->currValue < 5 ? false : true
         ];
 
         return (new PagerDataValue())->load($data);

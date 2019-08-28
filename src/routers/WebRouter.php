@@ -186,7 +186,7 @@ class WebRouter implements Routing
             $params = explode('&', $paramsStr);
             foreach ($params as $param) {
                 $tmp = explode('=', $param);
-                $actionParams[$tmp[0]] = $tmp[1] ?? null;
+                $actionParams[$tmp[0]] = $tmp[1] ? str_replace('?page', '', $tmp[1]) : null;
             }
         }
 
