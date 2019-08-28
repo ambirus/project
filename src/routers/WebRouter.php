@@ -31,6 +31,7 @@ class WebRouter implements Routing
     private $namespace = 'application\\controllers\\';
 
     /**
+     * @return mixed
      * @throws Exception
      */
     public function execute()
@@ -79,11 +80,11 @@ class WebRouter implements Routing
 
         $controllerInstance = new $namespaceController;
 
-        if (method_exists($controllerInstance, $actionName)) {
-            $controllerInstance->$actionName(self::$actionParams);
-        } else {
+        if (!method_exists($controllerInstance, $actionName)) {
             throw new Exception(__CLASS__ . ': ' . 'No such controller action &laquo;' . $actionName . '&raquo;');
         }
+
+        return $controllerInstance->$actionName(self::$actionParams);
     }
 
     /**

@@ -35,9 +35,12 @@ class App
         return self::$config;
     }
 
+    /**
+     * @return mixed
+     */
     public function run()
     {
-        $this->getRouter()->execute();
+        return $this->getRouter()->execute();
     }
 
     /**

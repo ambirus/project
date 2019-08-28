@@ -55,29 +55,30 @@ class View
      * @param string $view
      * @param array $params
      * @param bool $isPartial
+     * @return false|string
      * @throws Exception
      */
     public function render(string $view, array $params = [], bool $isPartial = false)
     {
         $templateFile = $this->templatesPath . DIRECTORY_SEPARATOR . $view . '.php';
 
-        if (file_exists($templateFile)) {
-            ob_start();
-            ob_implicit_flush(false);
-            extract($params, EXTR_OVERWRITE);
-
-            require $templateFile;
-
-            $content = ob_get_clean();
-            if ($isPartial) {
-                echo $content;
-                return;
-            } else {
-                $templateItems['content'] = $content;
-            }
-        } else {
+        if (!file_exists($templateFile)) {
             throw new Exception('No such template &laquo;' . $templateFile . '&raquo;! ');
         }
+
+        ob_start();
+        ob_implicit_flush(false);
+        extract($params, EXTR_OVERWRITE);
+
+        require $templateFile;
+
+        $content = ob_get_clean();
+
+        if ($isPartial) {
+            return $content;
+        }
+
+        $templateItems['content'] = $content;
 
         ob_start();
         ob_implicit_flush(false);
@@ -85,6 +86,6 @@ class View
 
         require $this->layoutFile;
 
-        echo ob_get_clean();
+        return ob_get_clean();
     }
 }

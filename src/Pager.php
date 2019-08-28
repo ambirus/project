@@ -4,13 +4,28 @@ namespace Project;
 
 use Project\values\PagerDataValue;
 
+/**
+ * Class Pager
+ * @package Project
+ */
 class Pager
 {
     const PAGER_LIMIT = 20;
 
+    /**
+     * @var int
+     */
     private $totalCount;
+    /**
+     * @var int
+     */
     private $currValue;
 
+    /**
+     * Pager constructor.
+     * @param int $totalCount
+     * @param int $currValue
+     */
     public function __construct(int $totalCount, int $currValue = 1)
     {
         $this->totalCount = $totalCount;
@@ -31,6 +46,9 @@ class Pager
         return new PagerDataValue($data);
     }
 
+    /**
+     * @return array
+     */
     private function getPreparedData(): array
     {
         $endValue = (int)ceil($this->totalCount / self::PAGER_LIMIT);

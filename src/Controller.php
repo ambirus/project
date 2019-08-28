@@ -2,6 +2,10 @@
 
 namespace Project;
 
+/**
+ * Class Controller
+ * @package Project
+ */
 abstract class Controller
 {
     protected $view;

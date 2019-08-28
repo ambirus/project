@@ -4,6 +4,10 @@ namespace Project\routers;
 
 use Exception;
 
+/**
+ * Class ConsoleRouter
+ * @package Project\routers
+ */
 class ConsoleRouter implements Routing
 {
     /**
@@ -56,10 +60,10 @@ class ConsoleRouter implements Routing
 
         $action = $actionName;
 
-        if (method_exists($controller, $action)) {
-            $controller->$action($actionParams);
-        } else {
+        if (!method_exists($controller, $action)) {
             throw new Exception(__CLASS__ . ': ' . 'No such controller action ' . $action . "\n");
         }
+
+        return $controller->$action($actionParams);
     }
 }
