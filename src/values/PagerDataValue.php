@@ -149,19 +149,20 @@ class PagerDataValue
      * @return PagerDataValue
      * @throws ReflectionException
      */
-    public function load(array $data): PagerDataValue
+    public function __construct(array $data = [])
     {
-        $props = (new ReflectionClass($this))->getProperties();
+        if (count($data) > 0) {           
 
-        foreach ($props as $prop) {
-            $propName = $prop->getName();
+            $props = (new ReflectionClass($this))->getProperties();
 
-            if (isset($data[$propName])) {
-                $this->$propName = $data[$propName];
+            foreach ($props as $prop) {
+                $propName = $prop->getName();
+
+                if (isset($data[$propName])) {
+                    $this->$propName = $data[$propName];
+                }
             }
+            $this->isEmpty = false;
         }
-        $this->isEmpty = false;
-        
-        return $this;
     }
 }

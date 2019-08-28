@@ -26,6 +26,13 @@ class Pager
             return new PagerDataValue();
         }
 
+        $data = $this->getPreparedData();
+
+        return new PagerDataValue($data);
+    }
+
+    private function getPreparedData(): array
+    {
         $endValue = (int)ceil($this->totalCount / self::PAGER_LIMIT);
         $body = [];
         $leftBody = $this->currValue - 3;
@@ -49,7 +56,7 @@ class Pager
 
         sort($body);
 
-        $data = [
+        return [
             'lt' => $this->currValue > 1 ? true : false,
             'rt' => $this->currValue < $endValue ? true : false,
             'startValue' => 1,
@@ -61,7 +68,5 @@ class Pager
             'body' => array_unique($body),
             'needRightDots' => $endValue - $this->currValue < 5 ? false : true
         ];
-
-        return (new PagerDataValue())->load($data);
     }
 }

@@ -3,11 +3,11 @@
 namespace Project\db;
 
 use application\models\entities\Country;
-use Exception;
 use Project\dictionaries\db\OrderDirectionsDictionary;
-use ReflectionException;
 use Project\dictionaries\db\JoinTypesDictionary;
 use Project\dictionaries\db\MethodsDictionary;
+use Exception;
+use ReflectionException;
 
 /**
  * Class QueryInstance
@@ -54,7 +54,7 @@ class QueryInstance
     /**
      * @var string
      */
-    private $limit = 20;
+    private $limit = '20';
     /**
      * @var string
      */
