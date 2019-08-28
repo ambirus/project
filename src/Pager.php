@@ -33,7 +33,7 @@ class Pager
 
         if ($leftBody >= 1) {
             for ($i = $this->currValue; $i >= $leftBody; $i--) {
-                if ($i > 1 && $i != $endValue) {
+                if ($i > 1 && $i < $endValue) {
                     $body[] = $i;
                 }
             }
@@ -41,7 +41,7 @@ class Pager
 
         if ($rightBody <= $endValue || $rightBody > $endValue) {
             for ($i = $this->currValue; $i <= $rightBody; $i++) {
-                if ($i < $endValue) {
+                if ($i > 1 && $i < $endValue) {
                     $body[] = $i;
                 }
             }
