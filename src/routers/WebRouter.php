@@ -134,7 +134,7 @@ class WebRouter implements Routing
      */
     private function getShortUrl(string $url): string
     {
-        $shortRoutes = App::getConfig()->get('routes');
+        $shortRoutes = App::getConfig()->get('routes.php');
 
         foreach ($shortRoutes as $pattern => $route) {
             if (preg_match("/" . $pattern . "/sU", $url)) {
