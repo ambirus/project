@@ -61,7 +61,7 @@ class Config
         }
 
         $content = file_get_contents($envFile);
-        $configArr = parse_ini_string($content, true);
+        $configArr = parse_ini_string($content, true, INI_SCANNER_TYPED);
 
         $blockParts = explode('.', $path);
 
@@ -69,7 +69,7 @@ class Config
             throw new Exception('Check ".env" file with path "' . $path . '"!');
         }
 
-        if (!empty($configArr[$blockParts[0]][$blockParts[1]])) {
+        if (isset($configArr[$blockParts[0]][$blockParts[1]])) {
             return [
                 $configArr[$blockParts[0]][$blockParts[1]]
             ];
