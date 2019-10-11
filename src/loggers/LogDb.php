@@ -10,7 +10,11 @@ use Project\Logger;
  */
 class LogDb implements Logger
 {
-    public function log()
+    /**
+     * @param string $errorType
+     * @param string $errorMessage
+     */
+    public function log(string $errorType, string $errorMessage)
     {
         // TODO: Implement log() method.
     }
