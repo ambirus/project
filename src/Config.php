@@ -69,7 +69,7 @@ class Config
             throw new Exception('Check ".env" file with path "' . $path . '"!');
         }
 
-        if (isset($configArr[$blockParts[0]][$blockParts[1]])) {
+        if (isset($blockParts[1]) && isset($configArr[$blockParts[0]][$blockParts[1]])) {
             return [
                 $configArr[$blockParts[0]][$blockParts[1]]
             ];
