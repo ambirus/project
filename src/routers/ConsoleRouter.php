@@ -16,7 +16,7 @@ class ConsoleRouter implements Routing
     public function execute()
     {
         /* exclude incorrect starts */
-        if (empty($_SERVER['argv'][1]) || strpos($_SERVER['argv'][0], 'ambirus') !== true) {
+        if (empty($_SERVER['argv'][1]) || strpos($_SERVER['argv'][0], 'ambirus') != true) {
             return;
         }
 
