@@ -18,7 +18,9 @@ class LogFile implements Logger
      */
     public function log(string $errorType, string $errorMessage)
     {
-        $content = date('Y-m-d H:i:s') . ': ' . $errorMessage . ', ' . $errorMessage . "\n";
+        $exception = unserialize($errorMessage);
+        $content = date('Y-m-d H:i:s') . ' | Type: ' . $errorType . ' | File: ' . $exception->getFile() .
+            ' | Line: ' . $exception->getLine() . ' | Message: ' . $exception->getMessage() . "\n";
         (new FileManager())->put($this->getRootDir() . DIRECTORY_SEPARATOR . 'error.log', $content, true);
     }
 
