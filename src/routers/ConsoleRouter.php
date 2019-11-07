@@ -8,7 +8,7 @@ use Exception;
  * Class ConsoleRouter
  * @package Project\routers
  */
-class ConsoleRouter implements Routing
+class ConsoleRouter extends Router
 {
     /**
      * @throws Exception

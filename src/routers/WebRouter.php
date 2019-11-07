@@ -9,7 +9,7 @@ use Project\App;
  * Class WebRouter
  * @package Project\routers
  */
-class WebRouter implements Routing
+class WebRouter extends Router
 {
     /**
      * @var string
@@ -73,6 +73,11 @@ class WebRouter implements Routing
         $controllerName = self::$controllerName . 'Controller';
         $actionName = 'action' . self::$actionName;
         $namespaceController = $this->namespace . $controllerName;
+
+        echo '<pre>';
+        var_dump($namespaceController);
+        echo '</pre>';
+        die;
 
         if (!class_exists($namespaceController)) {
             throw new Exception(__CLASS__ . ': ' . 'No such class &laquo;' . $namespaceController . '&raquo;');
