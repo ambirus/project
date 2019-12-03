@@ -90,7 +90,7 @@ class QueryInstance
     /**
      * Example:
      *
-     * query('SELECT id, name FROM table1 WHERE id > :id', ['id' => 10])
+     * query('SELECT id, name FROM table1 WHERE id > :id', ['id' => [$id, PDO::PARAM_INT]])
      *
      * @param string $sql
      * @param array $bindValues
@@ -139,7 +139,7 @@ class QueryInstance
     /**
      * Example:
      *
-     * where('id = :id OR name = :name', ['id' => 1, 'name' => 'Peter'])
+     * where('id = :id OR name = :name', ['id' => [$id, PDO::PARAM_INT], 'name' => $name])
      *
      * @param string $condition
      * @param array $bindValues

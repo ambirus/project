@@ -310,7 +310,17 @@ class QueryBuilder
      */
     private function execute(PDOStatement $query, array $preparedData = []): bool
     {
-        $res = $query->execute($preparedData);
+
+        if (!empty($preparedData)) {
+            foreach ($preparedData as $value => $type) {
+                if (is_array($type)) {
+                    $query->bindValue(":{$value}", $type[0], $type[1]);
+                } else {
+                    $query->bindValue(":{$value}", $type);
+                }
+            }
+        }
+        $res = $query->execute();
 
         if (!$res) {
             throw new DbException("DB error while performing the query: " . $query->queryString . " | Errors: " .
