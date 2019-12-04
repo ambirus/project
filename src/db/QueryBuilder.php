@@ -5,6 +5,7 @@ namespace Project\db;
 use PDO;
 use Exception;
 use PDOStatement;
+use Project\dictionaries\db\ParamsDictionary;
 use Project\exceptions\DbException;
 use Project\values\db\PreparedDataValue;
 
@@ -180,7 +181,7 @@ class QueryBuilder
      */
     private function getFields(): string
     {
-        return $this->queryInstance->getFields() ?? '`'. $this->queryInstance->getTableInstance()->getName() . '`' . '.*';
+        return $this->queryInstance->getFields() ?? '`' . $this->queryInstance->getTableInstance()->getName() . '`' . '.*';
     }
 
     /**
@@ -310,19 +311,19 @@ class QueryBuilder
      */
     private function execute(PDOStatement $query, array $preparedData = []): bool
     {
-
         if (!empty($preparedData)) {
             foreach ($preparedData as $value => $type) {
+                $bindValue = $type;
+                $bindType = ParamsDictionary::PARAM_STR;
                 if (is_array($type)) {
-                    $query->bindValue(":{$value}", $type[0], $type[1]);
-                } else {
-                    $query->bindValue(":{$value}", $type);
+                    $bindValue = $type[0];
+                    $bindType = $type[1];
                 }
+                $query->bindValue(":{$value}", $bindValue, $bindType);
             }
         }
-        $res = $query->execute();
-
-        if (!$res) {
+        
+        if (!$query->execute()) {
             throw new DbException("DB error while performing the query: " . $query->queryString . " | Errors: " .
                 json_encode($query->errorInfo()));
         }
