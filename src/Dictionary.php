@@ -6,18 +6,19 @@ use ReflectionClass;
 use ReflectionException;
 
 /**
- * Class Dictionary
- * @package Project
+ * Class Dictionary.
  */
 abstract class Dictionary
 {
     /**
-     * @return array
      * @throws ReflectionException
+     *
+     * @return array
      */
-    public static function get(): array 
+    public static function get(): array
     {
         $constants = (new ReflectionClass(static::class))->getConstants();
+
         return array_values($constants);
     }
 }

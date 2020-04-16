@@ -7,8 +7,7 @@ use Exception;
 use Project\App;
 
 /**
- * Class Mysql
- * @package Project\db
+ * Class Mysql.
  */
 class Mysql
 {
@@ -30,8 +29,9 @@ class Mysql
     }
 
     /**
-     * @return PDO
      * @throws Exception
+     *
+     * @return PDO
      */
     public static function getConnection()
     {
@@ -40,13 +40,13 @@ class Mysql
             $dbConfig = App::getConfig()->get($dbConfigFile);
 
             self::$connection = new PDO(
-                'mysql:host=' . $dbConfig['host'] . ';dbname=' . $dbConfig['database'],
+                'mysql:host='.$dbConfig['host'].';dbname='.$dbConfig['database'],
                 $dbConfig['login'],
                 $dbConfig['password'],
                 [
                     PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'",
                     PDO::ATTR_TIMEOUT => 55,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 ]
             );
         }

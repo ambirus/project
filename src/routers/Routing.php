@@ -3,8 +3,7 @@
 namespace Project\routers;
 
 /**
- * Interface Routing
- * @package Project\routers
+ * Interface Routing.
  */
 interface Routing
 {

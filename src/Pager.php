@@ -5,8 +5,7 @@ namespace Project;
 use Project\values\PagerDataValue;
 
 /**
- * Class Pager
- * @package Project
+ * Class Pager.
  */
 class Pager
 {
@@ -16,6 +15,7 @@ class Pager
      * @var int
      */
     private $totalCount;
+
     /**
      * @var int
      */
@@ -23,6 +23,7 @@ class Pager
 
     /**
      * Pager constructor.
+     *
      * @param int $totalCount
      * @param int $currValue
      */
@@ -51,7 +52,7 @@ class Pager
      */
     private function getPreparedData(): array
     {
-        $endValue = (int)ceil($this->totalCount / self::PAGER_LIMIT);
+        $endValue = (int) ceil($this->totalCount / self::PAGER_LIMIT);
         $body = [];
         $leftBody = $this->currValue - 3;
         $rightBody = $this->currValue + 3;
@@ -84,7 +85,7 @@ class Pager
             'rightValue' => $this->currValue + 1,
             'needLeftDots' => $this->currValue + 4 >= 10 ? true : false,
             'body' => array_unique($body),
-            'needRightDots' => $endValue - $this->currValue < 5 ? false : true
+            'needRightDots' => $endValue - $this->currValue < 5 ? false : true,
         ];
     }
 }

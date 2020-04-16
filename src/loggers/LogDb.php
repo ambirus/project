@@ -2,12 +2,11 @@
 
 namespace Project\loggers;
 
-use Project\db\Table;
 use Project\Logger;
+use Project\db\Table;
 
 /**
- * Class LogDb
- * @package Project\loggers
+ * Class LogDb.
  */
 class LogDb implements Logger
 {
@@ -30,15 +29,14 @@ class LogDb implements Logger
         $this->logInstance
             ->create([
                 'type' => $errorType,
-                'message' => str_replace("\n", '', $errorMessage)
+                'message' => str_replace("\n", '', $errorMessage),
             ])
             ->execute();
     }
 }
 
 /**
- * Class Log
- * @package Project\loggers
+ * Class Log.
  */
 class Log extends Table
 {
@@ -46,5 +44,4 @@ class Log extends Table
      * @var string
      */
     protected $name = 'log';
-
 }

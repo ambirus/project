@@ -2,13 +2,12 @@
 
 namespace Project;
 
-use Project\routers\ConsoleRouter;
 use Project\routers\Routing;
 use Project\routers\WebRouter;
+use Project\routers\ConsoleRouter;
 
 /**
- * Class App
- * @package Project
+ * Class App.
  */
 class App
 {

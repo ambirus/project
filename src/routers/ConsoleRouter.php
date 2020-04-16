@@ -5,8 +5,7 @@ namespace Project\routers;
 use Exception;
 
 /**
- * Class ConsoleRouter
- * @package Project\routers
+ * Class ConsoleRouter.
  */
 class ConsoleRouter implements Routing
 {
@@ -49,12 +48,12 @@ class ConsoleRouter implements Routing
             }
         }
 
-        $commandName = $commandName . 'Command';
-        $actionName = 'action' . $actionName;
-        $namespaceController = 'application\\commands\\' . $commandName;
+        $commandName = $commandName.'Command';
+        $actionName = 'action'.$actionName;
+        $namespaceController = 'application\\commands\\'.$commandName;
 
         if (!class_exists($namespaceController)) {
-            throw new Exception(__CLASS__ . ': ' . 'No such class ' . $namespaceController . "\n");
+            throw new Exception(__CLASS__.': '.'No such class '.$namespaceController."\n");
         }
 
         $controller = new $namespaceController;
@@ -62,7 +61,7 @@ class ConsoleRouter implements Routing
         $action = $actionName;
 
         if (!method_exists($controller, $action)) {
-            throw new Exception(__CLASS__ . ': ' . 'No such controller action ' . $action . "\n");
+            throw new Exception(__CLASS__.': '.'No such controller action '.$action."\n");
         }
 
         return $controller->$action($actionParams);

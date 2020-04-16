@@ -3,12 +3,9 @@
 namespace Project;
 
 use Exception;
-use Project\exceptions\HttpNotFoundException;
-use Project\managers\FileManager;
 
 /**
- * Class Config
- * @package Project
+ * Class Config.
  */
 class Config
 {
@@ -21,6 +18,7 @@ class Config
      * Config constructor.
      *
      * @param string $configPath
+     *
      * @throws Exception
      */
     public function __construct(string $configPath)
@@ -33,8 +31,10 @@ class Config
 
     /**
      * @param string $path
-     * @return array
+     *
      * @throws Exception
+     *
+     * @return array
      */
     public function get(string $path): array
     {
@@ -43,17 +43,18 @@ class Config
         }
 
         return $this->parseFromEnv($path);
-
     }
 
     /**
      * @param string $param
-     * @return array
+     *
      * @throws Exception
+     *
+     * @return array
      */
     private function parseFromEnv(string $path): array
     {
-        $envFile = $this->configPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+        $envFile = $this->configPath.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.
             '.env';
 
         if (!file_exists($envFile)) {
@@ -66,12 +67,12 @@ class Config
         $blockParts = explode('.', $path);
 
         if (empty($configArr[$blockParts[0]])) {
-            throw new Exception('Check ".env" file with path "' . $path . '"!');
+            throw new Exception('Check ".env" file with path "'.$path.'"!');
         }
 
         if (isset($blockParts[1]) && isset($configArr[$blockParts[0]][$blockParts[1]])) {
             return [
-                $configArr[$blockParts[0]][$blockParts[1]]
+                $configArr[$blockParts[0]][$blockParts[1]],
             ];
         }
 
@@ -80,15 +81,17 @@ class Config
 
     /**
      * @param string $file
-     * @return array
+     *
      * @throws Exception
+     *
+     * @return array
      */
     private function getFromFile(string $file): array
     {
-        $configFile = $this->configPath . DIRECTORY_SEPARATOR . $file;
+        $configFile = $this->configPath.DIRECTORY_SEPARATOR.$file;
 
         if (!file_exists($configFile)) {
-            throw new Exception('Config file "' . $file . '" is not found!');
+            throw new Exception('Config file "'.$file.'" is not found!');
         }
 
         return include $configFile;

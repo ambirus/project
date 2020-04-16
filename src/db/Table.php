@@ -6,8 +6,7 @@ use Exception;
 use Project\dictionaries\db\MethodsDictionary;
 
 /**
- * Class Table
- * @package Project\db
+ * Class Table.
  */
 abstract class Table
 {
@@ -28,12 +27,13 @@ abstract class Table
 
     /**
      * Table constructor.
+     *
      * @throws Exception
      */
     public function __construct()
     {
         if (is_null($this->name)) {
-            throw new Exception("Table name is required");
+            throw new Exception('Table name is required');
         }
     }
 
@@ -70,15 +70,17 @@ abstract class Table
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * (new Post())
      * ->create(['title' => 'Post 1'])
      * ->execute();
      *
      * @param array $data
-     * @return QueryInstance
+     *
      * @throws Exception
+     *
+     * @return QueryInstance
      */
     public function create(array $data): QueryInstance
     {
@@ -86,14 +88,15 @@ abstract class Table
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * (new Post())
      * ->read()
      * ->execute();
      *
-     * @return QueryInstance
      * @throws Exception
+     *
+     * @return QueryInstance
      */
     public function read(): QueryInstance
     {
@@ -101,15 +104,17 @@ abstract class Table
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * (new Post())
      * ->update(['title' => 'Post 2'])
      * ->execute();
      *
      * @param array $data
-     * @return QueryInstance
+     *
      * @throws Exception
+     *
+     * @return QueryInstance
      */
     public function update(array $data): QueryInstance
     {
@@ -117,14 +122,15 @@ abstract class Table
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * (new Post())
      * ->delete()
      * ->execute();
      *
-     * @return QueryInstance
      * @throws Exception
+     *
+     * @return QueryInstance
      */
     public function delete(): QueryInstance
     {

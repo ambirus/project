@@ -5,8 +5,7 @@ namespace Project\exceptions;
 use Exception;
 
 /**
- * Class HttpNotFoundException
- * @package Project\exceptions
+ * Class HttpNotFoundException.
  */
 class HttpNotFoundException extends Exception
 {

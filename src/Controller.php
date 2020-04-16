@@ -3,8 +3,7 @@
 namespace Project;
 
 /**
- * Class Controller
- * @package Project
+ * Class Controller.
  */
 abstract class Controller
 {

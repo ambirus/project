@@ -5,8 +5,7 @@ namespace Project\exceptions;
 use Exception;
 
 /**
- * Class DbException
- * @package Project\exceptions
+ * Class DbException.
  */
 class DbException extends Exception
 {

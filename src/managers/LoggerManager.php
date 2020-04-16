@@ -2,13 +2,12 @@
 
 namespace Project\managers;
 
+use Exception;
 use Project\App;
 use Project\Logger;
-use Exception;
 
 /**
- * Class LoggerManager
- * @package Project\managers
+ * Class LoggerManager.
  */
 class LoggerManager
 {
@@ -20,7 +19,7 @@ class LoggerManager
         $loggerClass = App::getConfig()->get('system.logger')[0];
 
         if (!class_exists($loggerClass)) {
-            throw new Exception($loggerClass . ' not found');
+            throw new Exception($loggerClass.' not found');
         }
 
         return new $loggerClass;

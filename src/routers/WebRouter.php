@@ -6,8 +6,7 @@ use Exception;
 use Project\App;
 
 /**
- * Class WebRouter
- * @package Project\routers
+ * Class WebRouter.
  */
 class WebRouter implements Routing
 {
@@ -15,24 +14,30 @@ class WebRouter implements Routing
      * @var string
      */
     private static $moduleName;
+
     /**
      * @var string
      */
     private static $controllerName = 'Index';
+
     /**
      * @var string
      */
     private static $actionName = 'Index';
+
     private static $actionParams;
+
     private static $controller;
+
     /**
      * @var string
      */
     private $namespace = 'application\\controllers\\';
 
     /**
-     * @return mixed
      * @throws Exception
+     *
+     * @return mixed
      */
     public function execute()
     {
@@ -44,7 +49,7 @@ class WebRouter implements Routing
         $paramsPos = 3;
 
         if ($routeParts[$controllerPos] === 'modules') {
-            $this->namespace = 'application\\modules\\' . $routeParts[$actionPos] . '\\controllers\\';
+            $this->namespace = 'application\\modules\\'.$routeParts[$actionPos].'\\controllers\\';
             self::$moduleName = $routeParts[$actionPos];
             $controllerPos = 3;
             $actionPos = 4;
@@ -55,33 +60,33 @@ class WebRouter implements Routing
         $rawActionName = !empty($routeParts[$actionPos]) ? $routeParts[$actionPos] : self::$actionName;
         $rawParams = $routeParts[$paramsPos] ?? '';
 
-        /**
+        /*
          * handling controller
          */
         self::$controllerName = $this->getController($rawControllerName);
 
-        /**
+        /*
          * handling action
          */
         self::$actionName = $this->getAction($rawActionName);
 
-        /**
+        /*
          * handling parameters
          */
         self::$actionParams = $this->getParams($rawParams);
 
-        $controllerName = self::$controllerName . 'Controller';
-        $actionName = 'action' . self::$actionName;
-        $namespaceController = $this->namespace . $controllerName;
+        $controllerName = self::$controllerName.'Controller';
+        $actionName = 'action'.self::$actionName;
+        $namespaceController = $this->namespace.$controllerName;
 
         if (!class_exists($namespaceController)) {
-            throw new Exception(__CLASS__ . ': ' . 'No such class &laquo;' . $namespaceController . '&raquo;');
+            throw new Exception(__CLASS__.': '.'No such class &laquo;'.$namespaceController.'&raquo;');
         }
 
         $controllerInstance = new $namespaceController;
 
         if (!method_exists($controllerInstance, $actionName)) {
-            throw new Exception(__CLASS__ . ': ' . 'No such controller action &laquo;' . $actionName . '&raquo;');
+            throw new Exception(__CLASS__.': '.'No such controller action &laquo;'.$actionName.'&raquo;');
         }
 
         return $controllerInstance->$actionName(self::$actionParams);
@@ -129,21 +134,23 @@ class WebRouter implements Routing
 
     /**
      * @param string $url
-     * @return string
+     *
      * @throws Exception
+     *
+     * @return string
      */
     private function getShortUrl(string $url): string
     {
         $shortRoutes = App::getConfig()->get('routes.php');
 
         foreach ($shortRoutes as $pattern => $route) {
-            if (preg_match("/" . $pattern . "/sU", $url)) {
+            if (preg_match('/'.$pattern.'/sU', $url)) {
                 $urlParts = explode('/', $url);
                 array_shift($urlParts);
                 $keys = array_keys($urlParts);
 
                 foreach ($keys as $key) {
-                    $route = str_replace('{' . $key . '}', $urlParts[$key], $route);
+                    $route = str_replace('{'.$key.'}', $urlParts[$key], $route);
                 }
 
                 return $route;
@@ -155,6 +162,7 @@ class WebRouter implements Routing
 
     /**
      * @param string $controllerName
+     *
      * @return string
      */
     private function getController(string $controllerName): string
@@ -164,6 +172,7 @@ class WebRouter implements Routing
 
     /**
      * @param string $actionName
+     *
      * @return string
      */
     private function getAction(string $actionName): string
@@ -173,6 +182,7 @@ class WebRouter implements Routing
 
     /**
      * @param string $paramsStr
+     *
      * @return array
      */
     private function getParams(string $paramsStr): array

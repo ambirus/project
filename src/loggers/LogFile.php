@@ -6,20 +6,20 @@ use Project\Logger;
 use Project\managers\FileManager;
 
 /**
- * Class LogFile
- * @package Project\loggers
+ * Class LogFile.
  */
 class LogFile implements Logger
 {
     /**
      * @param string $errorType
      * @param string $errorMessage
+     *
      * @return void
      */
     public function log(string $errorType, string $errorMessage)
     {
-        $content = date('Y-m-d H:i:s') . ' | Type: ' . $errorType . ' | Error: ' . $errorMessage . "\n";
-        (new FileManager())->put($this->getRootDir() . DIRECTORY_SEPARATOR . 'error.log', $content, true);
+        $content = date('Y-m-d H:i:s').' | Type: '.$errorType.' | Error: '.$errorMessage."\n";
+        (new FileManager())->put($this->getRootDir().DIRECTORY_SEPARATOR.'error.log', $content, true);
     }
 
     /**

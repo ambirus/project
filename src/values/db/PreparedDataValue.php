@@ -3,8 +3,7 @@
 namespace Project\values\db;
 
 /**
- * Class PreparedDataValue
- * @package Project\values\db
+ * Class PreparedDataValue.
  */
 class PreparedDataValue
 {
@@ -12,10 +11,12 @@ class PreparedDataValue
      * @var array
      */
     private $columns;
+
     /**
      * @var array
      */
     private $values;
+
     /**
      * @var array
      */

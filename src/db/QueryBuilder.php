@@ -5,13 +5,12 @@ namespace Project\db;
 use PDO;
 use Exception;
 use PDOStatement;
-use Project\dictionaries\db\ParamsDictionary;
 use Project\exceptions\DbException;
 use Project\values\db\PreparedDataValue;
+use Project\dictionaries\db\ParamsDictionary;
 
 /**
- * Class QueryBulider
- * @package Project\db
+ * Class QueryBulider.
  */
 class QueryBuilder
 {
@@ -19,6 +18,7 @@ class QueryBuilder
      * @var PDO
      */
     private $connection;
+
     /**
      * @var QueryInstance
      */
@@ -26,7 +26,9 @@ class QueryBuilder
 
     /**
      * QueryBuilder constructor.
+     *
      * @param QueryInstance $queryInstance
+     *
      * @throws Exception
      */
     public function __construct(QueryInstance $queryInstance)
@@ -36,22 +38,23 @@ class QueryBuilder
     }
 
     /**
-     * @return string
      * @throws Exception
+     *
+     * @return string
      */
     public function makeCreate(): string
     {
         $data = $this->queryInstance->getData();
 
         if (count($data) === 0) {
-            throw new Exception("Data required for create method");
+            throw new Exception('Data required for create method');
         }
 
         $preparedDataValue = $this->getPreparedDataValue($data);
 
-        $sql = "INSERT INTO `" . $this->queryInstance->getTableInstance()->getName() . "`
-        (" . implode(', ', $preparedDataValue->getColumns()) . ")
-        VALUES (" . implode(',', $preparedDataValue->getValues()) . ")";
+        $sql = 'INSERT INTO `'.$this->queryInstance->getTableInstance()->getName().'`
+        ('.implode(', ', $preparedDataValue->getColumns()).')
+        VALUES ('.implode(',', $preparedDataValue->getValues()).')';
 
         $query = $this->connection->prepare($sql);
 
@@ -61,8 +64,9 @@ class QueryBuilder
     }
 
     /**
-     * @return array|mixed
      * @throws Exception
+     *
+     * @return array|mixed
      */
     public function makeRead()
     {
@@ -79,9 +83,9 @@ class QueryBuilder
             $order = $this->getOrder();
             $limit = $this->getLimit();
 
-            $fields = "SQL_CALC_FOUND_ROWS " . $fields;
+            $fields = 'SQL_CALC_FOUND_ROWS '.$fields;
 
-            $sql = "SELECT " . $fields . " 
+            $sql = 'SELECT '.$fields." 
             FROM `{$this->queryInstance->getTableInstance()->getName()}` 
             {$joins} 
             {$wheres} 
@@ -102,7 +106,7 @@ class QueryBuilder
             return $query->fetch();
         }
 
-        $queryGetTotalCount = $this->connection->prepare("SELECT FOUND_ROWS() AS totalCount");
+        $queryGetTotalCount = $this->connection->prepare('SELECT FOUND_ROWS() AS totalCount');
         $this->execute($queryGetTotalCount);
         $result = $queryGetTotalCount->fetch();
         $totalCount = $result['totalCount'];
@@ -111,15 +115,16 @@ class QueryBuilder
     }
 
     /**
-     * @return bool
      * @throws Exception
+     *
+     * @return bool
      */
     public function makeUpdate(): bool
     {
         $data = $this->queryInstance->getData();
 
         if (count($data) === 0) {
-            throw new Exception("Data required for update method");
+            throw new Exception('Data required for update method');
         }
 
         $preparedDataValue = $this->getPreparedDataValue($data);
@@ -129,14 +134,14 @@ class QueryBuilder
         $preparedData = $preparedDataValue->getPreparedData();
 
         foreach ($columns as $key => $column) {
-            $columnsValues[] = $column . ' = ' . $values[$key];
+            $columnsValues[] = $column.' = '.$values[$key];
         }
 
         $where = $this->getWheres();
         $preparedData += $this->getPreparedWheres();
 
-        $sql = "UPDATE `" . $this->queryInstance->getTableInstance()->getName() . "`        
-        SET " . implode(',', $columnsValues) . " {$where}";
+        $sql = 'UPDATE `'.$this->queryInstance->getTableInstance()->getName().'`        
+        SET '.implode(',', $columnsValues)." {$where}";
 
         $query = $this->connection->prepare($sql);
 
@@ -144,8 +149,9 @@ class QueryBuilder
     }
 
     /**
-     * @return bool
      * @throws Exception
+     *
+     * @return bool
      */
     public function makeDelete(): bool
     {
@@ -161,6 +167,7 @@ class QueryBuilder
 
     /**
      * @param array $data
+     *
      * @return PreparedDataValue
      */
     private function getPreparedDataValue(array $data): PreparedDataValue
@@ -169,7 +176,7 @@ class QueryBuilder
 
         foreach ($data as $k => $v) {
             $preparedDataValue->setColumns($k);
-            $preparedDataValue->setValues(':' . $k);
+            $preparedDataValue->setValues(':'.$k);
             $preparedDataValue->setPreparedData([$k => $v]);
         }
 
@@ -181,7 +188,7 @@ class QueryBuilder
      */
     private function getFields(): string
     {
-        return $this->queryInstance->getFields() ?? '`' . $this->queryInstance->getTableInstance()->getName() . '`' . '.*';
+        return $this->queryInstance->getFields() ?? '`'.$this->queryInstance->getTableInstance()->getName().'`'.'.*';
     }
 
     /**
@@ -198,7 +205,7 @@ class QueryBuilder
         $joinArr = [];
 
         foreach ($joins as $join) {
-            $joinArr[] = $join[2] . ' JOIN ' . $join[0] . ' ON ' . $join[1];
+            $joinArr[] = $join[2].' JOIN '.$join[0].' ON '.$join[1];
         }
 
         return implode(' ', $joinArr);
@@ -221,7 +228,7 @@ class QueryBuilder
             $whereArr[] = $where[0];
         }
 
-        return ' WHERE ' . implode(' AND ', $whereArr);
+        return ' WHERE '.implode(' AND ', $whereArr);
     }
 
     /**
@@ -235,7 +242,7 @@ class QueryBuilder
             return '';
         }
 
-        return ' GROUP BY ' . $groupBy;
+        return ' GROUP BY '.$groupBy;
     }
 
     /**
@@ -249,7 +256,7 @@ class QueryBuilder
             return '';
         }
 
-        return ' HAVING ' . $having;
+        return ' HAVING '.$having;
     }
 
     /**
@@ -264,10 +271,10 @@ class QueryBuilder
         }
 
         foreach ($orders as $order) {
-            $tmp[] = ' ' . $order[0] . ' ' . $order[1];
+            $tmp[] = ' '.$order[0].' '.$order[1];
         }
 
-        return ' ORDER BY ' . implode(', ', $tmp);
+        return ' ORDER BY '.implode(', ', $tmp);
     }
 
     /**
@@ -276,7 +283,8 @@ class QueryBuilder
     private function getLimit(): string
     {
         $limit = $this->queryInstance->getLimit();
-        return empty($limit) ? '' : ' LIMIT ' . $limit;
+
+        return empty($limit) ? '' : ' LIMIT '.$limit;
     }
 
     /**
@@ -305,9 +313,11 @@ class QueryBuilder
 
     /**
      * @param PDOStatement $query
-     * @param array $preparedData
-     * @return bool
+     * @param array        $preparedData
+     *
      * @throws DbException
+     *
+     * @return bool
      */
     private function execute(PDOStatement $query, array $preparedData = []): bool
     {
@@ -322,9 +332,9 @@ class QueryBuilder
                 $query->bindValue(":{$value}", $bindValue, $bindType);
             }
         }
-        
+
         if (!$query->execute()) {
-            throw new DbException("DB error while performing the query: " . $query->queryString . " | Errors: " .
+            throw new DbException('DB error while performing the query: '.$query->queryString.' | Errors: '.
                 json_encode($query->errorInfo()));
         }
 

@@ -6,8 +6,7 @@ use ReflectionClass;
 use ReflectionException;
 
 /**
- * Class PagerDataValue
- * @package Project\values
+ * Class PagerDataValue.
  */
 class PagerDataValue
 {
@@ -15,42 +14,52 @@ class PagerDataValue
      * @var bool
      */
     private $lt = false;
+
     /**
      * @var int
      */
     private $startValue;
+
     /**
      * @var bool
      */
     private $needLeftDots = false;
+
     /**
      * @var array
      */
     private $body = [];
+
     /**
      * @var bool
      */
     private $needRightDots = false;
+
     /**
      * @var int
      */
     private $endValue = 0;
+
     /**
      * @var bool
      */
     private $rt = false;
+
     /**
      * @var int
      */
     private $currentValue;
+
     /**
      * @var int
      */
     private $leftValue;
+
     /**
      * @var int
      */
     private $rightValue;
+
     /**
      * @var bool
      */
@@ -146,13 +155,14 @@ class PagerDataValue
 
     /**
      * @param array $data
-     * @return PagerDataValue
+     *
      * @throws ReflectionException
+     *
+     * @return PagerDataValue
      */
     public function __construct(array $data = [])
     {
-        if (count($data) > 0) {           
-
+        if (count($data) > 0) {
             $props = (new ReflectionClass($this))->getProperties();
 
             foreach ($props as $prop) {

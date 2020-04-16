@@ -2,12 +2,13 @@
 
 namespace Project;
 
-use ReflectionClass;
 use Exception;
+use ReflectionClass;
 
 abstract class Model
 {
     private $errors;
+
     private $validators;
 
     /**
@@ -19,8 +20,9 @@ abstract class Model
     }
 
     /**
-     * @return string
      * @throws \ReflectionException
+     *
+     * @return string
      */
     public function formName(): string
     {
@@ -28,8 +30,9 @@ abstract class Model
     }
 
     /**
-     * @return array
      * @throws \ReflectionException
+     *
+     * @return array
      */
     public function attributes(): array
     {
@@ -56,6 +59,7 @@ abstract class Model
     /**
      * @param null $attributeNames
      * @param bool $clearErrors
+     *
      * @return bool
      */
     public function validate($attributeNames = null, $clearErrors = true)
@@ -76,21 +80,25 @@ abstract class Model
     }
 
     /**
-     * @return ArrayObject
      * @throws Exception
+     *
+     * @return ArrayObject
      */
     public function getValidators()
     {
         if ($this->validators === null) {
             $this->validators = $this->createValidators();
         }
+
         return $this->validators;
     }
 
     /**
      * @param null $attribute
-     * @return array
+     *
      * @throws Exception
+     *
+     * @return array
      */
     public function getActiveValidators($attribute = null): array
     {
@@ -106,8 +114,9 @@ abstract class Model
     }
 
     /**
-     * @return ArrayObject
      * @throws Exception
+     *
+     * @return ArrayObject
      */
     public function createValidators()
     {
@@ -123,11 +132,13 @@ abstract class Model
                 throw new Exception('Invalid validation rule: a rule must specify both attribute names and validator type');
             }
         }
+
         return $validators;
     }
 
     /**
      * @param $values
+     *
      * @throws \ReflectionException
      */
     public function setAttributes($values)
@@ -145,8 +156,10 @@ abstract class Model
     /**
      * @param $data
      * @param null $formName
-     * @return bool
+     *
      * @throws \ReflectionException
+     *
+     * @return bool
      */
     public function load($data, $formName = null): bool
     {
@@ -161,6 +174,7 @@ abstract class Model
 
             return true;
         }
+
         return false;
     }
 }

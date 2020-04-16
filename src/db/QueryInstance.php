@@ -2,16 +2,14 @@
 
 namespace Project\db;
 
-use application\models\entities\Country;
-use Project\dictionaries\db\OrderDirectionsDictionary;
-use Project\dictionaries\db\JoinTypesDictionary;
-use Project\dictionaries\db\MethodsDictionary;
 use Exception;
 use ReflectionException;
+use Project\dictionaries\db\MethodsDictionary;
+use Project\dictionaries\db\JoinTypesDictionary;
+use Project\dictionaries\db\OrderDirectionsDictionary;
 
 /**
- * Class QueryInstance
- * @package Project\db
+ * Class QueryInstance.
  */
 class QueryInstance
 {
@@ -19,50 +17,62 @@ class QueryInstance
      * @var string
      */
     private $method;
+
     /**
      * @var Table
      */
     private $tableInstance;
+
     /**
      * @var array
      */
     private $sqlData;
+
     /**
      * @var string
      */
     private $fields;
+
     /**
      * @var array
      */
     private $join;
+
     /**
      * @var array
      */
     private $where;
+
     /**
      * @var string
      */
     private $groupBy;
+
     /**
      * @var string
      */
     private $having;
+
     /**
      * @var array
      */
     private $order;
+
     /**
      * @var string
      */
     private $limit = '20';
+
     /**
      * @var string
      */
     private $offset;
+
     /**
      * @var bool
      */
     private $one;
+
     /**
      * @var array
      */
@@ -76,8 +86,9 @@ class QueryInstance
      * new QueryInstance('create', new Users(), ['id' => 1, 'name' => 'Peter'])
      *
      * @param string $method
-     * @param Table $tableInstance
-     * @param array $data
+     * @param Table  $tableInstance
+     * @param array  $data
+     *
      * @throws Exception
      */
     public function __construct(string $method, Table $tableInstance, array $data = [])
@@ -88,152 +99,173 @@ class QueryInstance
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * query('SELECT id, name FROM table1 WHERE id > :id', ['id' => [$id, PDO::PARAM_INT]])
      *
      * @param string $sql
-     * @param array $bindValues
+     * @param array  $bindValues
+     *
      * @return QueryInstance
      */
-    public function query(string $sql, array $bindValues = []): QueryInstance
+    public function query(string $sql, array $bindValues = []): self
     {
         $this->sqlData = [$sql, $bindValues];
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * select('table1.id, table2.name')
      *
      * @param string $fields
+     *
      * @return QueryInstance
      */
-    public function select(string $fields): QueryInstance
+    public function select(string $fields): self
     {
         $this->fields = $fields;
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * join('table2', 'table2.id = table1.post_id', 'LEFT')
      *
      * @param string $joinedTable
      * @param string $joinedCondition
      * @param string $typeOfJoin
-     * @return QueryInstance
+     *
      * @throws ReflectionException
+     *
+     * @return QueryInstance
      */
-    public function join(string $joinedTable, string $joinedCondition, string $typeOfJoin = ''): QueryInstance
+    public function join(string $joinedTable, string $joinedCondition, string $typeOfJoin = ''): self
     {
         if (!in_array($typeOfJoin, JoinTypesDictionary::get())) {
             throw new Exception('Valid type of join required');
         }
         $this->join[] = [$joinedTable, $joinedCondition, $typeOfJoin];
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * where('id = :id OR name = :name', ['id' => [$id, PDO::PARAM_INT], 'name' => $name])
      *
      * @param string $condition
-     * @param array $bindValues
+     * @param array  $bindValues
+     *
      * @return QueryInstance
      */
-    public function where(string $condition, array $bindValues = []): QueryInstance
+    public function where(string $condition, array $bindValues = []): self
     {
         $this->where[] = [$condition, $bindValues];
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * groupBy('table1.id')
      *
      * @param string $condition
+     *
      * @return QueryInstance
      */
-    public function groupBy(string $condition): QueryInstance
+    public function groupBy(string $condition): self
     {
         $this->groupBy = $condition;
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * having('postsCount > 5')
      *
      * @param string $condition
+     *
      * @return QueryInstance
      */
-    public function having(string $condition): QueryInstance
+    public function having(string $condition): self
     {
         $this->having = $condition;
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * orderBy('table.created_at', 'DESC')
      *
      * @param string $condition
      * @param string $orderDirection
-     * @return QueryInstance
+     *
      * @throws ReflectionException
+     *
+     * @return QueryInstance
      */
-    public function orderBy(string $condition, string $orderDirection = OrderDirectionsDictionary::ASC): QueryInstance
+    public function orderBy(string $condition, string $orderDirection = OrderDirectionsDictionary::ASC): self
     {
         if (!in_array($orderDirection, OrderDirectionsDictionary::get())) {
             throw new Exception('Valid order direction required');
         }
         $this->order[] = [$condition, $orderDirection];
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * limit(10)
      *
      * @param int $count
+     *
      * @return QueryInstance
      */
-    public function limit(int $count): QueryInstance
+    public function limit(int $count): self
     {
         $this->limit = $count;
+
         return $this;
     }
 
     /**
-     * Example:
+     * Example:.
      *
      * offset(10)
      *
      * @param int $count
+     *
      * @return QueryInstance
      */
-    public function offset(int $count): QueryInstance
+    public function offset(int $count): self
     {
         if ($count > 0) {
-            $this->limit = $count . ', ' . $this->limit;
+            $this->limit = $count.', '.$this->limit;
         }
+
         return $this;
     }
 
     /**
      * @return QueryInstance
      */
-    public function one(): QueryInstance
+    public function one(): self
     {
         $this->one = true;
+
         return $this;
     }
 
@@ -326,8 +358,9 @@ class QueryInstance
     }
 
     /**
-     * @return mixed
      * @throws ReflectionException
+     *
+     * @return mixed
      */
     public function execute()
     {
@@ -335,7 +368,7 @@ class QueryInstance
             throw new Exception('CRUD method required');
         }
 
-        $method = 'make' . ucfirst($this->method);
+        $method = 'make'.ucfirst($this->method);
         $result = (new QueryBuilder($this))->$method();
 
         if (!empty($result['items'])) {
