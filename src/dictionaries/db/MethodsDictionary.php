@@ -16,4 +16,6 @@ class MethodsDictionary extends Dictionary
     const UPDATE = 'update';
 
     const DELETE = 'delete';
+
+    const SOFT_DELETE = 'softDelete';
 }

@@ -157,8 +157,23 @@ class QueryBuilder
     {
         $where = $this->getWheres();
         $preparedData = $this->getPreparedWheres();
-
         $sql = "DELETE FROM `{$this->queryInstance->getTableInstance()->getName()}` {$where}";
+
+        $query = $this->connection->prepare($sql);
+
+        return $this->execute($query, $preparedData);
+    }
+
+    /**
+     * @throws DbException
+     *
+     * @return bool
+     */
+    public function makeSoftDelete(): bool
+    {
+        $where = $this->getWheres();
+        $preparedData = $this->getPreparedWheres();
+        $sql = "UPDATE `{$this->queryInstance->getTableInstance()->getName()}` SET `deleted_at` = NOW() {$where}";
 
         $query = $this->connection->prepare($sql);
 

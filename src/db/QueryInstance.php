@@ -369,6 +369,7 @@ class QueryInstance
         }
 
         $method = 'make'.ucfirst($this->method);
+
         $result = (new QueryBuilder($this))->$method();
 
         if (!empty($result['items'])) {

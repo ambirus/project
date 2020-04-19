@@ -26,6 +26,11 @@ abstract class Table
     protected $totalCount = 0;
 
     /**
+     * @var bool
+     */
+    protected $softDelete = false;
+
+    /**
      * Table constructor.
      *
      * @throws Exception
@@ -70,6 +75,14 @@ abstract class Table
     }
 
     /**
+     * @return bool
+     */
+    public function getSoftDelete(): bool
+    {
+        return $this->softDelete;
+    }
+
+    /**
      * Example:.
      *
      * (new Post())
@@ -100,7 +113,12 @@ abstract class Table
      */
     public function read(): QueryInstance
     {
-        return new QueryInstance(MethodsDictionary::READ, $this);
+        $queryInstance = new QueryInstance(MethodsDictionary::READ, $this);
+        if ($this->softDelete) {
+            $queryInstance->where('deleted_at is null');
+        }
+
+        return $queryInstance;
     }
 
     /**
@@ -134,6 +152,8 @@ abstract class Table
      */
     public function delete(): QueryInstance
     {
-        return new QueryInstance(MethodsDictionary::DELETE, $this);
+        $method = $this->softDelete ? MethodsDictionary::SOFT_DELETE : MethodsDictionary::DELETE;
+
+        return new QueryInstance($method, $this);
     }
 }
