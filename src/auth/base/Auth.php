@@ -29,7 +29,7 @@ class Auth
 
         if (
             ($userData['hash'] !== $_COOKIE['hash']) || ($userData['id'] !== $_COOKIE['id']) ||
-            (($userData['ip'] !== $_SERVER['REMOTE_ADDR']) && ($userData['ip'] !== '0'))
+            (($userData['ip'] !== $_SERVER['REMOTE_ADDR']) && ($userData['ip'] !== '0.0.0.0'))
         ) {
             setcookie('id', '', time() - 3600 * 24 * 30 * 12, '/');
             setcookie('hash', '', time() - 3600 * 24 * 30 * 12, '/', null, null, true);
