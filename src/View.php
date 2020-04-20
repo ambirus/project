@@ -23,6 +23,11 @@ class View
     /**
      * @var string
      */
+    private $layoutPath;
+
+    /**
+     * @var string
+     */
     private $layoutFile;
 
     /**
@@ -41,16 +46,16 @@ class View
             $this->templatesPath = $this->viewsPath.$applicationPath.$viewsPath;
         } else {
             $this->viewsPath .= $applicationPath.'views'.DIRECTORY_SEPARATOR;
-            $layoutPath = $this->viewsPath.'layouts';
+            $this->layoutPath = $this->viewsPath.'layouts';
 
             if (!empty(WebRouter::getCurrentModuleName())) {
                 $this->viewsPath = str_replace('application', 'application'.DIRECTORY_SEPARATOR.'modules'
                     .DIRECTORY_SEPARATOR.WebRouter::getCurrentModuleName(), $this->viewsPath);
                 if (is_dir($this->viewsPath.'layouts')) {
-                    $layoutPath = $this->viewsPath.'layouts';
+                    $this->layoutPath = $this->viewsPath.'layouts';
                 }
             }
-            $this->layoutFile = $layoutPath.DIRECTORY_SEPARATOR.'main.php';
+
             $this->templatesPath = $this->viewsPath.WebRouter::getCurrentControllerName();
         }
     }
@@ -90,8 +95,22 @@ class View
         ob_implicit_flush(false);
         extract($templateItems, EXTR_OVERWRITE);
 
+        $layoutFile = $this->layoutFile ?? 'main';
+        $this->layoutFile = $this->layoutPath.DIRECTORY_SEPARATOR.$layoutFile.'.php';
         require $this->layoutFile;
 
         return ob_get_clean();
+    }
+
+    /**
+     * @param string $layoutFile
+     *
+     * @return View
+     */
+    public function setLayout(string $layoutFile): self
+    {
+        $this->layoutFile = $layoutFile;
+
+        return $this;
     }
 }
