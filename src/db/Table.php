@@ -115,7 +115,7 @@ abstract class Table
     {
         $queryInstance = new QueryInstance(MethodsDictionary::READ, $this);
         if ($this->softDelete) {
-            $queryInstance->where('deleted_at is null');
+            $queryInstance->where('`'.$queryInstance->getTableInstance()->getName().'`.`deleted_at` is null');
         }
 
         return $queryInstance;
