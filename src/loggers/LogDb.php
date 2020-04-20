@@ -44,4 +44,9 @@ class Log extends Table
      * @var string
      */
     protected $name = 'log';
+
+    /**
+     * @var bool
+     */
+    protected $softDelete = true;
 }
