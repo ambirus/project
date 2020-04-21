@@ -3,7 +3,6 @@
 namespace Project\loggers;
 
 use Project\Logger;
-use Project\db\Table;
 
 /**
  * Class LogDb.
@@ -33,20 +32,4 @@ class LogDb implements Logger
             ])
             ->execute();
     }
-}
-
-/**
- * Class Log.
- */
-class Log extends Table
-{
-    /**
-     * @var string
-     */
-    protected $name = 'log';
-
-    /**
-     * @var bool
-     */
-    protected $softDelete = true;
 }
