@@ -41,7 +41,11 @@ class WebRouter implements Routing
      */
     public function execute()
     {
+        if (!$this->checkAllowedUrl($_SERVER['REQUEST_URI'])) {
+            exit(0);
+        }
         $route = $this->getShortUrl($_SERVER['REQUEST_URI']);
+
         $routeParts = explode('/', $route);
 
         $controllerPos = 1;
@@ -143,7 +147,7 @@ class WebRouter implements Routing
     {
         $shortRoutes = App::getConfig()->get('routes.php');
 
-        foreach ($shortRoutes as $pattern => $route) {
+        foreach ($shortRoutes['matches'] as $pattern => $route) {
             if (preg_match('/'.$pattern.'/sU', $url)) {
                 $urlParts = explode('/', $url);
                 array_shift($urlParts);
@@ -202,5 +206,26 @@ class WebRouter implements Routing
         }
 
         return $actionParams;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @throws Exception
+     *
+     * @return bool
+     */
+    private function checkAllowedUrl(string $url): bool
+    {
+        $shortRoutes = App::getConfig()->get('routes.php');
+        if (!empty($shortRoutes['asis'])) {
+            foreach ($shortRoutes['asis'] as $route) {
+                if (strpos($url, $route)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
