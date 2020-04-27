@@ -21,13 +21,15 @@ class LogDb implements Logger
 
     /**
      * @param string $errorType
+     * @param string $errorTitle
      * @param string $errorMessage
      */
-    public function log(string $errorType, string $errorMessage)
+    public function log(string $errorType, string $errorTitle, string $errorMessage)
     {
         $this->logInstance
             ->create([
                 'type' => $errorType,
+                'title' => $errorTitle,
                 'message' => str_replace("\n", '', $errorMessage),
             ])
             ->execute();

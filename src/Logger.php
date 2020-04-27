@@ -10,9 +10,10 @@ interface Logger
 {
     /**
      * @param string $errorType
+     * @param string $errorTitle
      * @param string $errorMessage
      *
      * @return void
      */
-    public function log(string $errorType, string $errorMessage);
+    public function log(string $errorType, string $errorTitle, string $errorMessage);
 }
