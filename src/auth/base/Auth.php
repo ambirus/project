@@ -3,6 +3,8 @@
 namespace Project\auth\base;
 
 use Project\auth\User;
+use Project\values\auth\base\LoginValue;
+use Project\values\auth\base\RegisterValue;
 
 /**
  * Class Auth.
@@ -41,29 +43,27 @@ class Auth
     }
 
     /**
-     * @param string $login
-     * @param string $password
-     * @param bool   $checkIp
+     * @param LoginValue $loginValue
      *
      * @throws \ReflectionException
      *
      * @return bool
      */
-    public function login(string $login, string $password, bool $checkIp = false): bool
+    public function login(LoginValue $loginValue): bool
     {
         $userInstance = new User();
         $userData = $userInstance
             ->read()
             ->select('id, password')
-            ->where('login = :login', ['login' => $login])
+            ->where('login = :login', ['login' => $loginValue->getLogin()])
             ->one()
             ->execute();
 
-        if (password_verify($password, $userData['password'])) {
+        if (password_verify($loginValue->getPassword(), $userData['password'])) {
             $hash = md5($this->generateCode(10));
             $dataToUpdate['hash'] = $hash;
 
-            if ($checkIp) {
+            if ($loginValue->getCheckIp()) {
                 $dataToUpdate['ip'] = "INET_ATON('".$_SERVER['REMOTE_ADDR']."')";
             }
 
@@ -85,6 +85,23 @@ class Auth
     {
         setcookie('id', '', time() - 3600 * 24 * 30 * 12, '/');
         setcookie('hash', '', time() - 3600 * 24 * 30 * 12, '/', null, null, true);
+    }
+
+    /**
+     * @param RegisterValue $registerValue
+     *
+     * @return mixed
+     */
+    public function register(RegisterValue $registerValue)
+    {
+        return (new User())
+            ->create([
+                'login' => $registerValue->getLogin(),
+                'password' => password_hash($registerValue->getPassword(), PASSWORD_BCRYPT),
+                'role_id' => $registerValue->getRoleId(),
+                'email' => $registerValue->getEmail(),
+            ])
+            ->execute();
     }
 
     /**
