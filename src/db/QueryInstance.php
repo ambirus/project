@@ -74,6 +74,11 @@ class QueryInstance
     private $one;
 
     /**
+     * @var bool
+     */
+    private $toSql;
+
+    /**
      * @var array
      */
     private $data;
@@ -270,6 +275,16 @@ class QueryInstance
     }
 
     /**
+     * @return QueryInstance
+     */
+    public function toSql(): self
+    {
+        $this->toSql = true;
+
+        return $this;
+    }
+
+    /**
      * @return null|array
      */
     public function getSqlData(): ?array
@@ -339,6 +354,14 @@ class QueryInstance
     public function getOne(): ?bool
     {
         return $this->one;
+    }
+
+    /**
+     * @return null|bool
+     */
+    public function getToSql(): ?bool
+    {
+        return $this->toSql;
     }
 
     /**

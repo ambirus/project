@@ -348,6 +348,10 @@ class QueryBuilder
             }
         }
 
+        if ($this->queryInstance->getToSql()) {
+            $query->debugDumpParams();
+        }
+
         if (!$query->execute()) {
             throw new DbException('DB error while performing the query: '.$query->queryString.' | Errors: '.
                 json_encode($query->errorInfo()));
